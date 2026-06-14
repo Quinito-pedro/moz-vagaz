@@ -1,4 +1,4 @@
-[14/06/2026 18:07] Quinito Luís: <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -152,7 +152,8 @@
             max-width: 80%;
             box-shadow: 0 1px 1px rgba(0,0,0,0.1);
         }
-[14/06/2026 18:07] Quinito Luís: .chat-msg.admin {
+
+        .chat-msg.admin {
             background: #d9fdd3;
             margin-left: auto;
         }
@@ -201,8 +202,7 @@
                 <button class="btn-main" onclick="filtrarVagas()">Pesquisar</button>
             </div>
 
-            <div id="lista-vagas">
-                </div>
+            <div id="lista-vagas"></div>
         </section>
 
         <section id="registro" class="section">
@@ -227,8 +227,7 @@
         <section id="comunidade" class="section">
             <div class="card">
                 <h3>💬 Chat de Dúvidas (Estilo Grupo)</h3>
-                <div class="chat-box" id="chat-container">
-                    </div>
+                <div class="chat-box" id="chat-container"></div>
                 <div style="display: flex; gap: 0.5rem;">
                     <input type="text" id="chat-nome" placeholder="Seu Nome" style="width: 30%; margin: 0;">
                     <input type="text" id="chat-texto" placeholder="Digite sua dúvida sobre as vagas..." style="width: 70%; margin: 0;">
@@ -239,8 +238,7 @@
             <div class="card">
                 <h3>🏆 Histórias de Sucesso (Depoimentos)</h3>
                 <p style="color: #666; margin-bottom: 1rem;">Conseguiu um emprego através do portal? Deixe seu testemunho aqui!</p>
-                <div class="depoimentos-list" id="depoimentos-container" style="background: #fff;">
-[14/06/2026 18:07] Quinito Luís: </div>
+                <div class="depoimentos-list" id="depoimentos-container" style="background: #fff;"></div>
                 <form id="form-depoimento" onsubmit="salvarDepoimento(event)">
                     <input type="text" id="dep-nome" placeholder="Seu Nome" required>
                     <textarea id="dep-texto" placeholder="Conte como o portal te ajudou..." rows="3" required></textarea>
@@ -274,15 +272,14 @@
                 <hr style="margin: 2rem 0;">
 
                 <h4>👥 Membros Aguardando Vagas (<span id="total-membros">0</span>)</h4>
-                <div id="lista-membros" style="margin-top: 1rem; max-height: 250px; overflow-y: auto;">
-                    </div>
+                <div id="lista-membros" style="margin-top: 1rem; max-height: 250px; overflow-y: auto;"></div>
             </div>
         </section>
 
     </div>
 
     <script>
-        // Banco de Dados Simulado no Navegador (LocalStorage)
+        // Banco de Dados Simulado no Navegador (LocalStorage) com fallback seguro para array vazio
         let dados = {
             vagas: JSON.parse(localStorage.getItem('db_vagas')) || [],
             membros: JSON.parse(localStorage.getItem('db_membros')) || [],
@@ -321,25 +318,26 @@
             alert('Vaga publicada com sucesso!');
             switchSection('vagas');
         }
-[14/06/2026 18:07] Quinito Luís: function renderVagas(lista) {
+
+        function renderVagas(lista) {
             const container = document.getElementById('lista-vagas');
             container.innerHTML = '';
-            if(lista.length === 0) {
+            if(!lista || lista.length === 0) {
                 container.innerHTML = '<div class="card"><p>Nenhuma vaga encontrada no momento.</p></div>';
                 return;
             }
             lista.forEach(vaga => {
-                container.innerHTML += 
+                container.innerHTML += `
                     <div class="card vaga-card">
                         <div class="vaga-header">
-                            <span>📂 Area: <b>${vaga.area}</b></span>
+                            <span>📂 Área: <b>${vaga.area}</b></span>
                             <span>📅 ${vaga.data}</span>
                         </div>
                         <h2 style="color: var(--primary-dark); margin-bottom: 0.5rem;">${vaga.titulo}</h2>
                         <p style="margin-bottom: 0.8rem;">📍 <b>Localização:</b> ${vaga.local}</p>
                         <p style="white-space: pre-line; background: #f9f9f9; padding: 0.8rem; border-radius: 4px;">${vaga.desc}</p>
                     </div>
-                ;
+                `;
             });
         }
 
@@ -375,12 +373,16 @@
             document.getElementById('total-membros').innerText = dados.membros.length;
             const container = document.getElementById('lista-membros');
             container.innerHTML = '';
+            if(dados.membros.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-size: 0.9rem;">Nenhum membro aguardando no momento.</p>';
+                return;
+            }
             dados.membros.forEach(m => {
-                container.innerHTML += 
+                container.innerHTML += `
                     <div style="padding: 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem;">
                         👤 <b>${m.nome}</b> - ${m.area} (📍 ${m.local})
                     </div>
-                ;
+                `;
             });
         }
 
@@ -394,7 +396,7 @@
                 nome: nome,
                 texto: texto,
                 hora: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
-                isAdmin: nome.toLowerCase() === 'admin' // Se digitar "admin" no nome ganha cor diferente
+                isAdmin: nome.toLowerCase() === 'admin'
             };
 
             dados.chat.push(msg);
@@ -405,14 +407,14 @@
 
         function renderChat() {
             const container = document.getElementById('chat-container');
-[14/06/2026 18:07] Quinito Luís: container.innerHTML = '';
+            container.innerHTML = '';
             dados.chat.forEach(msg => {
-                container.innerHTML += 
+                container.innerHTML += `
                     <div class="chat-msg ${msg.isAdmin ? 'admin' : ''}">
                         <b>${msg.nome}:</b> ${msg.texto}
                         <div class="msg-meta">${msg.hora}</div>
                     </div>
-                ;
+                `;
             });
             container.scrollTop = container.scrollHeight;
         }
@@ -434,17 +436,19 @@
             const container = document.getElementById('depoimentos-container');
             container.innerHTML = '';
             dados.depoimentos.forEach(d => {
-                container.innerHTML += 
+                container.innerHTML += `
                     <div style="border-bottom: 1px dashed #ccc; padding: 0.8rem 0;">
                         <span class="badge">Sucesso 🎉</span> <b>${d.nome}</b> disse:
-                        <p style="font-style: italic; margin-top: 0.3rem; color: #55px;">"${d.texto}"</p>
+                        <p style="font-style: italic; margin-top: 0.3rem; color: #555;">"${d.texto}"</p>
                     </div>
-                ;
+                `;
             });
         }
 
-        // Inicializar a página carregando as vagas existentes
-        renderVagas(dados.vagas);
+        // Inicializar a aplicação carregando a view inicial padrão
+        window.addEventListener('DOMContentLoaded', () => {
+            renderVagas(dados.vagas);
+        });
     </script>
 </body>
 </html>
