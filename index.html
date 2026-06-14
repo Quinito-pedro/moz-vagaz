@@ -16,7 +16,7 @@
             --primary: var(--mz-green);
             --primary-dark: #005c46;
             --dark: #111827;
-            --light: #f0fdf4;          /* Fundo verde-claro ultra suave para leitura confortável */
+            --light: #f0fdf4;          /* Fundo verde-claro ultra suave */
             --text: #0f172a;
             --gray-border: #cbd5e1;
         }
@@ -29,7 +29,6 @@
         }
 
         body {
-            /* Fundo com degradê suave remetendo às cores nacionais */
             background: linear-gradient(135deg, #e6f4ea 0%, #f0fdf4 100%);
             color: var(--text);
             display: flex;
@@ -45,7 +44,7 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-            border-bottom: 4px solid var(--mz-yellow); /* Detalhe em amarelo nacional */
+            border-bottom: 4px solid var(--mz-yellow);
         }
 
         .header-container {
@@ -94,16 +93,16 @@
             color: var(--mz-white);
         }
 
+        /* O botão admin começa escondido por padrão na Opção 1 */
         #btn-admin {
             display: none; 
             background-color: #7c2d12;
             border-color: var(--mz-red);
         }
 
-        /* Contentor Otimizado para Telas Grandes (Computador) e Pequenas (Telemóvel) */
         .container {
             width: 100%;
-            max-width: 1000px; /* Largura ideal para leitura centralizada em ecrãs grandes */
+            max-width: 1000px;
             margin: 2rem auto;
             padding: 0 1.2rem;
             flex: 1;
@@ -181,7 +180,6 @@
             background-color: var(--primary-dark);
         }
 
-        /* Barra Única de Pesquisa Avançada */
         .single-search-box {
             position: relative;
             margin-bottom: 2rem;
@@ -196,9 +194,8 @@
             box-shadow: 0 4px 10px rgba(0, 122, 94, 0.08);
         }
 
-        /* Cartões de Vagas */
         .vaga-card {
-            border-left: 6px solid var(--mz-red); /* Destaque em Vermelho */
+            border-left: 6px solid var(--mz-red);
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
@@ -227,7 +224,6 @@
             color: #1d4ed8;
         }
 
-        /* Feed de Comentários */
         .feed-comentarios {
             margin-top: 1.5rem;
             display: flex;
@@ -240,7 +236,6 @@
             border: 1px solid #e2e8f0;
             border-radius: 10px;
             padding: 1.2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
         .comentario-user {
@@ -288,7 +283,7 @@
             position: absolute;
             right: 1.5rem;
             bottom: 1.8rem;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: #475569;
             text-decoration: none;
             cursor: pointer;
@@ -296,40 +291,14 @@
             font-style: italic;
         }
 
-        /* 📱 ADAPTAÇÃO PARA TELAS PEQUENAS (MEDIA QUERIES) */
         @media (max-width: 768px) {
-            header {
-                padding: 1rem;
-            }
-            .header-container { 
-                flex-direction: column; 
-                gap: 1rem; 
-            }
-            nav { 
-                display: flex; 
-                flex-wrap: wrap; 
-                gap: 0.4rem; 
-                justify-content: center; 
-                width: 100%;
-            }
-            nav button { 
-                margin: 0; 
-                flex: 1;
-                min-width: 100px;
-                font-size: 0.85rem;
-                padding: 0.5rem 0.8rem;
-            }
-            .container {
-                margin: 1rem auto;
-                padding: 0 0.8rem;
-            }
-            .card {
-                padding: 1.2rem;
-                border-radius: 10px;
-            }
-            h2 {
-                font-size: 1.2rem !important;
-            }
+            header { padding: 1rem; }
+            .header-container { flex-direction: column; gap: 1rem; }
+            nav { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; width: 100%; }
+            nav button { margin: 0; flex: 1; min-width: 100px; font-size: 0.85rem; padding: 0.5rem 0.8rem; }
+            .container { margin: 1rem auto; padding: 0 0.8rem; }
+            .card { padding: 1.2rem; border-radius: 10px; }
+            h2 { font-size: 1.2rem !important; }
         }
     </style>
 </head>
@@ -349,7 +318,6 @@
 
     <div class="container">
 
-        <!-- TELA DE VAGAS -->
         <section id="vagas" class="section active">
             <div id="area-busca">
                 <div class="single-search-box">
@@ -358,7 +326,6 @@
                 <div id="lista-vagas"></div>
             </div>
 
-            <!-- Detalhes da Vaga Otimizado -->
             <div id="detalhe-vaga" style="display: none;">
                 <button class="btn-main" style="background-color: #475569; margin-bottom: 1.5rem;" onclick="fecharVaga()">⬅️ Voltar para a lista</button>
                 <div class="card" style="border-top: 6px solid var(--mz-green);">
@@ -375,7 +342,6 @@
             </div>
         </section>
 
-        <!-- TELA DE CADASTRO -->
         <section id="registro" class="section">
             <div class="card">
                 <h3>📝 Registo na Lista de Candidatos Visíveis</h3>
@@ -395,7 +361,6 @@
             </div>
         </section>
 
-        <!-- TELA DE TESTEMUNHOS -->
         <section id="comunidade" class="section">
             <div class="card">
                 <h3>🏆 Feed de Testemunhos de Sucesso</h3>
@@ -413,7 +378,6 @@
             </div>
         </section>
 
-        <!-- PAINEL ADMIN -->
         <section id="admin" class="section">
             <div class="card" style="border: 2px solid var(--mz-red);">
                 <h3>🔐 Painel do Administrador (Restrito)</h3>
@@ -444,7 +408,7 @@
 
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--gray-border);">
 
-                <h4>👥 Candidatos na Base ativa (<span id="total-membros">0</span>)</h4>
+                <h4>👥 Candidatos na Base activa (<span id="total-membros">0</span>)</h4>
                 <div id="lista-membros" style="margin-top: 1rem; max-height: 250px; overflow-y: auto;"></div>
             </div>
         </section>
@@ -465,16 +429,18 @@
 
         let isAdminAutenticado = false;
 
-        function activarModoAdmin() {
+        // FUNÇÃO DO SEGREDO CORRIGIDA: Ativa o modo, exibe o botão e já entra na tela
+        function ativarModoAdmin() {
             isAdminAutenticado = true;
             document.getElementById('btn-admin').style.display = 'inline-block';
-            alert('Modo Administrador Autorizado.');
-            switchSection('admin');
+            alert('Modo Administrador Autorizado com Sucesso.');
+            switchSection('admin'); // Vai direto para o painel de postagem
         }
 
         function switchSection(sectionId) {
+            // Se tentar entrar no admin sem clicar no segredo antes, bloqueia
             if(sectionId === 'admin' && !isAdminAutenticado) {
-                alert('Acesso negado.');
+                alert('Acesso negado. Utilize a assinatura do administrador no rodapé.');
                 return;
             }
 
@@ -517,7 +483,6 @@
             document.getElementById('vaga-desc').value = textoBruto;
         }
 
-        // --- DETETOR E CONVERSOR DE LINKS EM TEXTO ---
         function converterTextoParaLinks(texto) {
             if(!texto) return "";
             const regexUrl = /(https?:\/\/[^\s]+)/g;
@@ -547,7 +512,7 @@
             localStorage.setItem('db_vagas', JSON.stringify(dados.vagas));
             document.getElementById('form-vaga').reset();
             document.getElementById('admin-raw-paste').value = '';
-            alert('Vaga publicada!');
+            alert('Vaga publicada com sucesso!');
             switchSection('vagas');
         }
 
