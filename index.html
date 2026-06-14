@@ -7,10 +7,10 @@
     <style>
         :root {
             /* Cores Inspiradas no Emblema e Bandeira Nacional de Moçambique */
-            --mz-green: #007a5e;       /* Verde da terra */
-            --mz-black: #000000;       /* Preto do continente */
-            --mz-yellow: #fcd116;      /* Amarelo das riquezas do subsolo */
-            --mz-red: #d21034;         /* Vermelho da luta e resistência */
+            --mz-green: #007a5e;
+            --mz-black: #000000;
+            --mz-yellow: #fcd116;
+            --mz-red: #d21034;
             --mz-white: #ffffff;
             
             --primary: var(--mz-green);
@@ -190,19 +190,31 @@
             background-color: var(--whatsapp-color) !important;
             color: white;
             border: none;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            justify-content: center;
+            gap: 6px;
             text-decoration: none;
+            transition: background 0.2s;
         }
 
         .btn-whatsapp:hover {
             background-color: #1ebd56 !important;
+        }
+
+        .btn-whatsapp-mass {
+            background-color: #075e54 !important;
+            width: 100%;
+            padding: 0.9rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
         }
 
         .single-search-box {
@@ -384,7 +396,6 @@
                     <label>Sua Localização:</label>
                     <input type="text" id="cand-local" placeholder="Ex: Maputo, Beira, Nampula..." required>
 
-                    <!-- NOVO CAMPO: WHATSAPP NOTIFICAÇÃO -->
                     <label>Número do WhatsApp (com código, ex: 258840000000):</label>
                     <input type="tel" id="cand-whatsapp" placeholder="258xxxxxxxx" required>
 
@@ -442,9 +453,18 @@
 
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--gray-border);">
 
-                <h4>👥 Candidatos Cadastrados & Alertas de WhatsApp (<span id="total-membros">0</span>)</h4>
-                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">Use os botões verdes abaixo para enviar alertas rápidos das novas vagas publicadas.</p>
-                <div id="lista-membros" style="margin-top: 1rem; max-height: 300px; overflow-y: auto; background: #f1f5f9; padding: 0.5rem; border-radius: 8px;"></div>
+                <h4>📢 Disparar Alerta Geral Antispam</h4>
+                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.8rem;">
+                    Clique no botão verde abaixo para abrir o WhatsApp com um único aviso inteligente contendo o link do site e o resumo das últimas vagas disponíveis.
+                </p>
+                
+                <!-- BOTÃO DE ENVIO EM MASSA INTELIGENTE COM O LINK DO SITE -->
+                <a href="#" id="btn-disparo-coletivo" target="_blank" class="btn-whatsapp btn-whatsapp-mass">
+                    📢 Enviar Alerta Geral para Todos no WhatsApp
+                </a>
+
+                <h4>👥 Candidatos Cadastrados (<span id="total-membros">0</span>)</h4>
+                <div id="lista-membros" style="margin-top: 0.5rem; max-height: 200px; overflow-y: auto; background: #f1f5f9; padding: 0.5rem; border-radius: 8px;"></div>
             </div>
         </section>
 
@@ -463,7 +483,15 @@
         };
 
         let isAdminAutenticado = false;
-        let ultimaVagaPublicada = null; // Guarda a vaga recente para gerar a notificação automática
+
+        function obterLinkDoSite() {
+            // Pega o endereço real atual onde o site está rodando de forma 100% dinâmica!
+            let urlAtual = window.location.href;
+            if (urlAtual.startsWith('file:///')) {
+                return "https://vagasmoz.github.io"; // Link padrão fictício caso estejas a testar offline no PC
+            }
+            return urlAtual;
+        }
 
         function ativarModoAdmin() {
             isAdminAutenticado = true;
@@ -543,14 +571,13 @@
                 data: new Date().toLocaleDateString('pt-BR')
             };
             dados.vagas.unshift(novaVaga);
-            ultimaVagaPublicada = novaVaga; // Guarda para o alerta de mensagens
             localStorage.setItem('db_vagas', JSON.stringify(dados.vagas));
             
             document.getElementById('form-vaga').reset();
             document.getElementById('admin-raw-paste').value = '';
             
-            alert('Vaga publicada! Agora podes usar a lista abaixo para notificar os candidatos via WhatsApp.');
-            carregarPainelAdmin();
+            alert('Vaga publicada com sucesso! O Alerta Geral do WhatsApp foi atualizado automaticamente.');
+            carregarPainelAdmin(); // Atualiza a seção e reconstrói o link inteligente de disparo geral
         }
 
         function renderVagas(lista) {
@@ -608,8 +635,6 @@
 
         function salvarCandidato(e) {
             e.preventDefault();
-            
-            // Limpar caracteres estranhos do número de telefone deixados pelo usuário
             let whatsappLimpo = document.getElementById('cand-whatsapp').value.replace(/[^0-9]/g, "");
             
             const novoCandidato = {
@@ -627,17 +652,25 @@
             switchSection('vagas');
         }
 
-        // MONTA O LINK EXCLUSIVO DO WHATSAPP DE NOTIFICAÇÃO
-        function gerarLinkWhatsApp(numero, nomeCandidato) {
-            let tituloVaga = ultimaVagaPublicada ? ultimaVagaPublicada.titulo : "Novas Vagas";
-            let localVaga = ultimaVagaPublicada ? ultimaVagaPublicada.local : "Moçambique";
+        // MONTA A MENSAGEM COLETIVA ANTISPAM COM LINK DO SITE E RESUMO
+        function atualizarBotaoDisparoColetivo() {
+            const btnGeral = document.getElementById('btn-disparo-coletivo');
+            let linkSite = obterLinkDoSite();
             
-            let mensagem = `Olá ${nomeCandidato}! 🇲🇿 O *VAGAS MOZ* tem uma nova oportunidade para ti:\n\n` +
-                           `💼 *Cargo:* ${tituloVaga}\n` +
-                           `📍 *Local:* ${localVaga}\n\n` +
-                           `Aceda ao portal agora para ver os detalhes e contactos de candidatura!`;
+            // Pega a última vaga lançada para dar como exemplo principal na mensagem
+            let ultimaVaga = dados.vagas[0];
+            let tituloDestaque = ultimaVaga ? ultimaVaga.titulo : "Várias Áreas";
             
-            return `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+            // Texto adaptado à tua exigência de conter "Muitas vagas disponíveis no site"
+            let mensagemColetiva = `📢 *ALERTA DE EMPREGO - VAGAS MOZ* 🇲🇿\n\n` +
+                                   `Grandes novidades! Temos *MUITAS VAGAS DISPONÍVEIS NO SITE* prontas para candidatura hoje.\n\n` +
+                                   `🔥 *Destaque Recente:* ${tituloDestaque}\n` +
+                                   `📌 E muitas outras oportunidades abertas à tua espera!\n\n` +
+                                   `🔗 *Clica no link abaixo para aceder e ver os contactos:* \n` +
+                                   `${linkSite}`;
+
+            // Transforma a mensagem em formato de link para o WhatsApp abrir direto
+            btnGeral.href = `https://wa.me/?text=${encodeURIComponent(mensagemColetiva)}`;
         }
 
         function carregarPainelAdmin() {
@@ -645,22 +678,22 @@
             const container = document.getElementById('lista-membros');
             container.innerHTML = '';
             
+            // Atualiza o link do botão de disparo coletivo com as últimas novidades
+            atualizarBotaoDisparoColetivo();
+            
             if(dados.membros.length === 0) {
-                container.innerHTML = '<p style="color: #64748b; font-size: 0.9rem; padding: 0.5rem;">Nenhum profissional cadastrado com WhatsApp.</p>';
+                container.innerHTML = '<p style="color: #64748b; font-size: 0.9rem; padding: 0.5rem;">Nenhum profissional cadastrado.</p>';
                 return;
             }
             
             dados.membros.forEach(m => {
-                let linkZap = gerarLinkWhatsApp(m.whatsapp, m.nome);
                 container.innerHTML += `
                     <div class="membro-item">
                         <div>
                             👤 <b>${m.nome}</b> - ${m.area} (📍 ${m.local}) <br>
                             <small style="color:#64748b;">📱 WhatsApp: ${m.whatsapp}</small>
                         </div>
-                        <a href="${linkZap}" target="_blank" class="btn-whatsapp">
-                            📢 Notificar via WhatsApp
-                        </a>
+                        <span class="badge">Ativo ✔️</span>
                     </div>
                 `;
             });
