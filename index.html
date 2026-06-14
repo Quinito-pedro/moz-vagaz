@@ -16,9 +16,10 @@
             --primary: var(--mz-green);
             --primary-dark: #005c46;
             --dark: #111827;
-            --light: #f0fdf4;          /* Fundo verde-claro ultra suave */
+            --light: #f0fdf4;
             --text: #0f172a;
             --gray-border: #cbd5e1;
+            --whatsapp-color: #25d366;
         }
 
         * {
@@ -93,7 +94,6 @@
             color: var(--mz-white);
         }
 
-        /* O botão admin começa escondido por padrão na Opção 1 */
         #btn-admin {
             display: none; 
             background-color: #7c2d12;
@@ -139,6 +139,12 @@
             padding-left: 8px;
         }
 
+        h4 {
+            color: var(--dark);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
         label {
             display: block;
             font-weight: 600;
@@ -178,6 +184,25 @@
 
         button.btn-main:hover {
             background-color: var(--primary-dark);
+        }
+
+        .btn-whatsapp {
+            background-color: var(--whatsapp-color) !important;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #1ebd56 !important;
         }
 
         .single-search-box {
@@ -238,19 +263,6 @@
             padding: 1.2rem;
         }
 
-        .comentario-user {
-            font-weight: bold;
-            color: var(--mz-black);
-            font-size: 0.95rem;
-            margin-bottom: 0.35rem;
-        }
-
-        .comentario-texto {
-            font-size: 1rem;
-            color: #334155;
-            line-height: 1.5;
-        }
-
         .badge {
             background: #e6f4ea;
             color: var(--mz-green);
@@ -266,6 +278,18 @@
             padding: 1.5rem;
             border-radius: 8px;
             margin-bottom: 2rem;
+        }
+
+        .membro-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.85rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            background: #fff;
+            margin-bottom: 0.3rem;
+            border-radius: 6px;
         }
 
         footer {
@@ -299,6 +323,7 @@
             .container { margin: 1rem auto; padding: 0 0.8rem; }
             .card { padding: 1.2rem; border-radius: 10px; }
             h2 { font-size: 1.2rem !important; }
+            .membro-item { flex-direction: column; align-items: flex-start; gap: 8px; }
         }
     </style>
 </head>
@@ -318,6 +343,7 @@
 
     <div class="container">
 
+        <!-- TELA DE VAGAS -->
         <section id="vagas" class="section active">
             <div id="area-busca">
                 <div class="single-search-box">
@@ -326,6 +352,7 @@
                 <div id="lista-vagas"></div>
             </div>
 
+            <!-- Detalhes da Vaga -->
             <div id="detalhe-vaga" style="display: none;">
                 <button class="btn-main" style="background-color: #475569; margin-bottom: 1.5rem;" onclick="fecharVaga()">⬅️ Voltar para a lista</button>
                 <div class="card" style="border-top: 6px solid var(--mz-green);">
@@ -342,10 +369,11 @@
             </div>
         </section>
 
+        <!-- TELA DE CADASTRO -->
         <section id="registro" class="section">
             <div class="card">
                 <h3>📝 Registo na Lista de Candidatos Visíveis</h3>
-                <p style="color: #64748b; margin-bottom: 1.5rem;">Fique visível na nossa base para que recrutadores locais encontrem seu perfil.</p>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Deixe o seu contacto para que os recrutadores o encontrem e receba avisos de vagas no WhatsApp.</p>
                 <form id="form-candidato" onsubmit="salvarCandidato(event)">
                     <label>Nome Completo:</label>
                     <input type="text" id="cand-nome" required>
@@ -354,13 +382,18 @@
                     <input type="text" id="cand-area" placeholder="Ex: Administração, TI, Saúde..." required>
 
                     <label>Sua Localização:</label>
-                    <input type="text" id="cand-local" placeholder="Ex: Matola, Chimoio, Beira..." required>
+                    <input type="text" id="cand-local" placeholder="Ex: Maputo, Beira, Nampula..." required>
 
-                    <button type="submit" class="btn-main" style="width: 100%;">Cadastrar meu Perfil Grátis</button>
+                    <!-- NOVO CAMPO: WHATSAPP NOTIFICAÇÃO -->
+                    <label>Número do WhatsApp (com código, ex: 258840000000):</label>
+                    <input type="tel" id="cand-whatsapp" placeholder="258xxxxxxxx" required>
+
+                    <button type="submit" class="btn-main" style="width: 100%;">Cadastrar e Ativar Alertas no WhatsApp</button>
                 </form>
             </div>
         </section>
 
+        <!-- TELA DE TESTEMUNHOS -->
         <section id="comunidade" class="section">
             <div class="card">
                 <h3>🏆 Feed de Testemunhos de Sucesso</h3>
@@ -378,6 +411,7 @@
             </div>
         </section>
 
+        <!-- PAINEL ADMIN -->
         <section id="admin" class="section">
             <div class="card" style="border: 2px solid var(--mz-red);">
                 <h3>🔐 Painel do Administrador (Restrito)</h3>
@@ -408,8 +442,9 @@
 
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--gray-border);">
 
-                <h4>👥 Candidatos na Base activa (<span id="total-membros">0</span>)</h4>
-                <div id="lista-membros" style="margin-top: 1rem; max-height: 250px; overflow-y: auto;"></div>
+                <h4>👥 Candidatos Cadastrados & Alertas de WhatsApp (<span id="total-membros">0</span>)</h4>
+                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">Use os botões verdes abaixo para enviar alertas rápidos das novas vagas publicadas.</p>
+                <div id="lista-membros" style="margin-top: 1rem; max-height: 300px; overflow-y: auto; background: #f1f5f9; padding: 0.5rem; border-radius: 8px;"></div>
             </div>
         </section>
 
@@ -428,17 +463,16 @@
         };
 
         let isAdminAutenticado = false;
+        let ultimaVagaPublicada = null; // Guarda a vaga recente para gerar a notificação automática
 
-        // FUNÇÃO DO SEGREDO CORRIGIDA: Ativa o modo, exibe o botão e já entra na tela
         function ativarModoAdmin() {
             isAdminAutenticado = true;
             document.getElementById('btn-admin').style.display = 'inline-block';
             alert('Modo Administrador Autorizado com Sucesso.');
-            switchSection('admin'); // Vai direto para o painel de postagem
+            switchSection('admin');
         }
 
         function switchSection(sectionId) {
-            // Se tentar entrar no admin sem clicar no segredo antes, bloqueia
             if(sectionId === 'admin' && !isAdminAutenticado) {
                 alert('Acesso negado. Utilize a assinatura do administrador no rodapé.');
                 return;
@@ -509,11 +543,14 @@
                 data: new Date().toLocaleDateString('pt-BR')
             };
             dados.vagas.unshift(novaVaga);
+            ultimaVagaPublicada = novaVaga; // Guarda para o alerta de mensagens
             localStorage.setItem('db_vagas', JSON.stringify(dados.vagas));
+            
             document.getElementById('form-vaga').reset();
             document.getElementById('admin-raw-paste').value = '';
-            alert('Vaga publicada com sucesso!');
-            switchSection('vagas');
+            
+            alert('Vaga publicada! Agora podes usar a lista abaixo para notificar os candidatos via WhatsApp.');
+            carregarPainelAdmin();
         }
 
         function renderVagas(lista) {
@@ -571,31 +608,59 @@
 
         function salvarCandidato(e) {
             e.preventDefault();
+            
+            // Limpar caracteres estranhos do número de telefone deixados pelo usuário
+            let whatsappLimpo = document.getElementById('cand-whatsapp').value.replace(/[^0-9]/g, "");
+            
             const novoCandidato = {
                 nome: document.getElementById('cand-nome').value,
                 area: document.getElementById('cand-area').value,
-                local: document.getElementById('cand-local').value
+                local: document.getElementById('cand-local').value,
+                whatsapp: whatsappLimpo
             };
+            
             dados.membros.push(novoCandidato);
             localStorage.setItem('db_membros', JSON.stringify(dados.membros));
             document.getElementById('form-candidato').reset();
             
-            alert('Excelente! Seu perfil já se encontra listado no banco de talentos.');
+            alert('Excelente! Cadastro feito e alertas de WhatsApp ativos com sucesso!');
             switchSection('vagas');
+        }
+
+        // MONTA O LINK EXCLUSIVO DO WHATSAPP DE NOTIFICAÇÃO
+        function gerarLinkWhatsApp(numero, nomeCandidato) {
+            let tituloVaga = ultimaVagaPublicada ? ultimaVagaPublicada.titulo : "Novas Vagas";
+            let localVaga = ultimaVagaPublicada ? ultimaVagaPublicada.local : "Moçambique";
+            
+            let mensagem = `Olá ${nomeCandidato}! 🇲🇿 O *VAGAS MOZ* tem uma nova oportunidade para ti:\n\n` +
+                           `💼 *Cargo:* ${tituloVaga}\n` +
+                           `📍 *Local:* ${localVaga}\n\n` +
+                           `Aceda ao portal agora para ver os detalhes e contactos de candidatura!`;
+            
+            return `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
         }
 
         function carregarPainelAdmin() {
             document.getElementById('total-membros').innerText = dados.membros.length;
             const container = document.getElementById('lista-membros');
             container.innerHTML = '';
+            
             if(dados.membros.length === 0) {
-                container.innerHTML = '<p style="color: #64748b; font-size: 0.9rem; padding: 0.5rem;">Nenhum profissional cadastrado.</p>';
+                container.innerHTML = '<p style="color: #64748b; font-size: 0.9rem; padding: 0.5rem;">Nenhum profissional cadastrado com WhatsApp.</p>';
                 return;
             }
+            
             dados.membros.forEach(m => {
+                let linkZap = gerarLinkWhatsApp(m.whatsapp, m.nome);
                 container.innerHTML += `
-                    <div style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem;">
-                        👤 <b>${m.nome}</b> - Especialidade: ${m.area} (📍 Cidade: ${m.local})
+                    <div class="membro-item">
+                        <div>
+                            👤 <b>${m.nome}</b> - ${m.area} (📍 ${m.local}) <br>
+                            <small style="color:#64748b;">📱 WhatsApp: ${m.whatsapp}</small>
+                        </div>
+                        <a href="${linkZap}" target="_blank" class="btn-whatsapp">
+                            📢 Notificar via WhatsApp
+                        </a>
                     </div>
                 `;
             });
