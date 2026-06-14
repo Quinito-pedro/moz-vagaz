@@ -3,37 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Vagas Grátis</title>
+    <title>VAGAS MOZ - Portal de Emprego</title>
     <style>
         :root {
-            --primary: #25d366; /* Verde estilo WhatsApp */
-            --primary-dark: #128c7e;
-            --dark: #075e54;
-            --light: #f0f2f5;
+            --primary: #0056b3; /* Azul Profissional Corporativo */
+            --primary-dark: #003d80;
+            --dark: #1e293b;
+            --light: #f8fafc;
             --white: #ffffff;
-            --text: #333333;
+            --text: #0f172a;
+            --gray-border: #cbd5e1;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         body {
             background-color: var(--light);
             color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         header {
             background-color: var(--dark);
             color: var(--white);
-            padding: 1rem;
+            padding: 1.2rem 1rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
         .header-container {
@@ -44,26 +48,46 @@
             align-items: center;
         }
 
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--white);
+        }
+
+        .logo span {
+            color: #38bdf8;
+        }
+
         nav button {
             background: transparent;
-            border: 1px solid var(--white);
-            color: var(--white);
-            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.8);
+            padding: 0.6rem 1.2rem;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 6px;
             margin-left: 0.5rem;
-            transition: 0.3s;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         nav button:hover, nav button.active {
             background-color: var(--primary);
             border-color: var(--primary);
+            color: var(--white);
+        }
+
+        #btn-admin {
+            display: none; /* Escondido por padrão para usuários comuns */
+            background-color: #9a3412;
+            border-color: #ea580c;
         }
 
         .container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1rem;
+            flex: 1;
         }
 
         .section {
@@ -74,103 +98,164 @@
             display: block;
         }
 
-        /* Coisas comuns de Formulinho */
         .card {
             background: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-            margin-bottom: 1.5rem;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            color: #475569;
         }
 
         input, textarea, select {
             width: 100%;
-            padding: 0.8rem;
-            margin: 0.5rem 0 1.2rem 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 0.75rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid var(--gray-border);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #fff;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
         }
 
         button.btn-main {
             background-color: var(--primary);
             color: var(--white);
             border: none;
-            padding: 0.8rem 1.5rem;
-            font-weight: bold;
-            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 6px;
             cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
+            transition: background-color 0.2s;
         }
 
         button.btn-main:hover {
             background-color: var(--primary-dark);
         }
 
-        /* Buscador */
         .search-box {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         @media (max-width: 768px) {
             .search-box { grid-template-columns: 1fr; }
             .header-container { flex-direction: column; gap: 1rem; }
+            nav { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+            nav button { margin: 0; }
         }
 
-        /* Lista de Vagas */
         .vaga-card {
-            border-left: 5px solid var(--primary);
+            border-left: 6px solid var(--primary);
         }
+        
         .vaga-header {
             display: flex;
             justify-content: space-between;
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
         }
 
-        /* Chat e Depoimentos */
         .chat-box, .depoimentos-list {
             max-height: 400px;
             overflow-y: auto;
-            background: #efeae2;
-            padding: 1rem;
+            background: #f1f5f9;
+            padding: 1.2rem;
             border-radius: 8px;
-            margin-bottom: 1rem;
-            border: 1px solid #ddd;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--gray-border);
         }
 
         .chat-msg {
             background: var(--white);
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1rem;
             border-radius: 8px;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
             width: fit-content;
-            max-width: 80%;
-            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            max-width: 85%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         .chat-msg.admin {
-            background: #d9fdd3;
+            background: #e0f2fe;
+            border-right: 4px solid #0284c7;
             margin-left: auto;
         }
 
         .msg-meta {
-            font-size: 0.75rem;
-            color: #888;
-            margin-top: 0.3rem;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
             text-align: right;
         }
 
         .badge {
-            background: #e1f5fe;
-            color: #0288d1;
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Caixa de Inteligência de Colagem no Painel Admin */
+        .smart-paste-area {
+            background: #f8fafc;
+            border: 2px dashed #94a3b8;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: #94a3b8;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            margin-top: auto;
+            border-top: 1px solid #334155;
+            position: relative;
+        }
+
+        /* Marca d'água oculta/discreta no canto inferior direito */
+        .sys-signature {
+            position: absolute;
+            right: 1.5rem;
+            bottom: 1.5rem;
+            font-size: 0.7rem;
+            color: #475569;
+            text-decoration: none;
+            cursor: pointer;
+            user-select: none;
+            font-style: italic;
+        }
+        
+        .sys-signature:hover {
+            color: #64748b;
         }
     </style>
 </head>
@@ -178,12 +263,12 @@
 
     <header>
         <div class="header-container">
-            <h2>📢 PortalVagas Grátis</h2>
+            <h2 class="logo">📢 VAGAS<span>MOZ</span></h2>
             <nav>
                 <button onclick="switchSection('vagas')" id="btn-vagas" class="active">Ver Vagas</button>
                 <button onclick="switchSection('registro')" id="btn-registro">Fazer Cadastro</button>
                 <button onclick="switchSection('comunidade')" id="btn-comunidade">Chat & Depoimentos</button>
-                <button onclick="switchSection('admin')" id="btn-admin" style="border-color: #ffbc00;">Painel Admin</button>
+                <button onclick="switchSection('admin')" id="btn-admin">Painel Admin</button>
             </nav>
         </div>
     </header>
@@ -192,14 +277,14 @@
 
         <section id="vagas" class="section active">
             <div class="card">
-                <h3>🔍 Encontre sua oportunidade</h3>
-                <p style="margin-bottom: 1rem; color: #666;">Busque ou simplesmente role a tela para ver as vagas mais recentes.</p>
+                <h3>🔍 Encontre sua oportunidade em Moçambique</h3>
+                <p style="margin-bottom: 1.5rem; color: #64748b;">Filtre sua busca por cargo, área de atuação ou localização provincial.</p>
                 <div class="search-box">
-                    <input type="text" id="search-cargo" placeholder="Ex: Recepcionista, Motorista...">
+                    <input type="text" id="search-cargo" placeholder="Ex: Motorista, Consultor...">
                     <input type="text" id="search-area" placeholder="Área profissional...">
-                    <input type="text" id="search-local" placeholder="Cidade ou Região...">
+                    <input type="text" id="search-local" placeholder="Ex: Maputo, Beira, Nampula...">
                 </div>
-                <button class="btn-main" onclick="filtrarVagas()">Pesquisar</button>
+                <button class="btn-main" style="width: 100%;" onclick="filtrarVagas()">Pesquisar Vagas</button>
             </div>
 
             <div id="lista-vagas"></div>
@@ -207,53 +292,60 @@
 
         <section id="registro" class="section">
             <div class="card">
-                <h3>📝 Entre na Lista de Espera</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Cadastre-se para ficar visível e receber alertas de novas vagas.</p>
+                <h3>📝 Entre na Lista de Candidatos Visíveis</h3>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Fique disponível na nossa base para que recrutadores encontrem seu perfil.</p>
                 <form id="form-candidato" onsubmit="salvarCandidato(event)">
                     <label>Nome Completo:</label>
                     <input type="text" id="cand-nome" required>
 
-                    <label>Área de Formação / Atuação:</label>
-                    <input type="text" id="cand-area" placeholder="Ex: Contabilidade, Construção Civil..." required>
+                    <label>Área de Formação / Especialidade:</label>
+                    <input type="text" id="cand-area" placeholder="Ex: Administração, TI, Saúde..." required>
 
                     <label>Sua Localização:</label>
-                    <input type="text" id="cand-local" placeholder="Ex: Maputo, São Paulo..." required>
+                    <input type="text" id="cand-local" placeholder="Ex: Matola, Chimoio..." required>
 
-                    <button type="submit" class="btn-main">Cadastrar meu Perfil</button>
+                    <button type="submit" class="btn-main" style="width: 100%;">Cadastrar meu Perfil Grátis</button>
                 </form>
             </div>
         </section>
 
         <section id="comunidade" class="section">
             <div class="card">
-                <h3>💬 Chat de Dúvidas (Estilo Grupo)</h3>
+                <h3>💬 Chat de Ajuda e Dúvidas Coletivas</h3>
                 <div class="chat-box" id="chat-container"></div>
-                <div style="display: flex; gap: 0.5rem;">
-                    <input type="text" id="chat-nome" placeholder="Seu Nome" style="width: 30%; margin: 0;">
-                    <input type="text" id="chat-texto" placeholder="Digite sua dúvida sobre as vagas..." style="width: 70%; margin: 0;">
-                    <button class="btn-main" onclick="enviarMensagem()" style="width: auto;">Enviar</button>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <input type="text" id="chat-nome" placeholder="Seu Nome" style="flex: 1; min-width: 150px; margin: 0;">
+                    <input type="text" id="chat-texto" placeholder="Pergunte sobre processos seletivos ou envie suporte..." style="flex: 3; min-width: 250px; margin: 0;">
+                    <button class="btn-main" onclick="enviarMensagem()">Enviar</button>
                 </div>
             </div>
 
             <div class="card">
-                <h3>🏆 Histórias de Sucesso (Depoimentos)</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Conseguiu um emprego através do portal? Deixe seu testemunho aqui!</p>
+                <h3>🏆 Testemunhos de Sucesso</h3>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Conseguiu uma vaga? Deixe seu agradecimento ou relato aqui!</p>
                 <div class="depoimentos-list" id="depoimentos-container" style="background: #fff;"></div>
                 <form id="form-depoimento" onsubmit="salvarDepoimento(event)">
                     <input type="text" id="dep-nome" placeholder="Seu Nome" required>
-                    <textarea id="dep-texto" placeholder="Conte como o portal te ajudou..." rows="3" required></textarea>
-                    <button type="submit" class="btn-main">Publicar Testemunho</button>
+                    <textarea id="dep-texto" placeholder="Conte sua história de sucesso com o VAGAS MOZ..." rows="3" required></textarea>
+                    <button type="submit" class="btn-main">Publicar Meu Relato</button>
                 </form>
             </div>
         </section>
 
         <section id="admin" class="section">
-            <div class="card" style="border: 2px solid #ffbc00;">
-                <h3>🔐 Painel do Administrador</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Espaço exclusivo para você publicar vagas e gerenciar quem se inscreveu.</p>
+            <div class="card" style="border: 2px solid #ea580c;">
+                <h3>🔐 Painel do Administrador (Restrito)</h3>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Ferramentas avançadas para publicação rápida de texto capturado em redes sociais.</p>
                 
-                <h4 style="margin-top: 1rem;">➕ Publicar Nova Vaga</h4>
-                <form id="form-vaga" onsubmit="publicarVaga(event)" style="margin-top: 0.5rem;">
+                <div class="smart-paste-area">
+                    <label style="color: #ea580c;">📋 Colar Texto Bruto (WhatsApp / Telegram / LinkedIn):</label>
+                    <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem;">Cole o texto copiado de qualquer lugar abaixo e clique no botão para que nosso script auto-organize o formulário.</p>
+                    <textarea id="admin-raw-paste" rows="5" placeholder="Cole aqui a mensagem inteira da vaga vinda do grupo..."></textarea>
+                    <button type="button" class="btn-main" style="background: #475569;" onclick="processarTextoBruto()">Extrair Dados da Vaga</button>
+                </div>
+
+                <h4>➕ Confirmar e Publicar Vaga</h4>
+                <form id="form-vaga" onsubmit="publicarVaga(event)" style="margin-top: 1rem;">
                     <label>Título do Cargo:</label>
                     <input type="text" id="vaga-titulo" required>
 
@@ -263,23 +355,28 @@
                     <label>Localização:</label>
                     <input type="text" id="vaga-local" required>
 
-                    <label>Descrição da Vaga e Como se candidatar:</label>
-                    <textarea id="vaga-desc" rows="4" placeholder="Ex: Enviar CV para o email X ou ligar para o número Y" required></textarea>
+                    <label>Instruções de Candidatura e Detalhes:</label>
+                    <textarea id="vaga-desc" rows="5" placeholder="Informações de contato, e-mail ou link de inscrição..." required></textarea>
 
-                    <button type="submit" class="btn-main" style="background-color: var(--primary-dark);">Publicar Vaga no Portal</button>
+                    <button type="submit" class="btn-main" style="background-color: #ea580c; width: 100%;">Publicar Oficialmente no VAGAS MOZ</button>
                 </form>
 
-                <hr style="margin: 2rem 0;">
+                <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--gray-border);">
 
-                <h4>👥 Membros Aguardando Vagas (<span id="total-membros">0</span>)</h4>
+                <h4>👥 Candidatos na Base ativa (<span id="total-membros">0</span>)</h4>
                 <div id="lista-membros" style="margin-top: 1rem; max-height: 250px; overflow-y: auto;"></div>
             </div>
         </section>
 
     </div>
 
+    <footer>
+        <p>&copy; 2026 VAGAS MOZ. Todos os direitos reservados.</p>
+        <span class="sys-signature" id="trigger-adm" onclick="ativarModoAdmin()">administradorQuinito</span>
+    </footer>
+
     <script>
-        // Banco de Dados Simulado no Navegador (LocalStorage) com fallback seguro para array vazio
+        // Memória em LocalStorage escalável
         let dados = {
             vagas: JSON.parse(localStorage.getItem('db_vagas')) || [],
             membros: JSON.parse(localStorage.getItem('db_membros')) || [],
@@ -287,18 +384,73 @@
             depoimentos: JSON.parse(localStorage.getItem('db_depoimentos')) || []
         };
 
-        // Sistema de navegação de abas (Tabs)
+        // Estado Global de Acesso Autenticado
+        let isAdminAutenticado = false;
+
+        // Ativação da Camada de Segurança ao clicar na assinatura
+        function ativarModoAdmin() {
+            isAdminAutenticado = true;
+            const btnAdmin = document.getElementById('btn-admin');
+            btnAdmin.style.display = 'inline-block'; // Exibe o botão secretamente
+            alert('Modo Administrador Autorizado. O Painel Admin agora está acessível no menu superior.');
+            switchSection('admin');
+        }
+
+        // Sistema Limpo de Chaveamento de Abas
         function switchSection(sectionId) {
+            // Validação de segurança básica no front-end
+            if(sectionId === 'admin' && !isAdminAutenticado) {
+                alert('Acesso negado. Esta área é exclusiva do administradorQuinito.');
+                return;
+            }
+
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
             
             document.getElementById(sectionId).classList.add('active');
             document.getElementById('btn-' + sectionId).classList.add('active');
 
-            // Renderiza os dados atualizados ao mudar de tela
             if(sectionId === 'vagas') renderVagas(dados.vagas);
             if(sectionId === 'admin') carregarPainelAdmin();
             if(sectionId === 'comunidade') { renderChat(); renderDepoimentos(); }
+        }
+
+        // Algoritmo Regex de Processamento inteligente de Texto Colado da Web/Redes Sociais
+        function processarTextoBruto() {
+            const textoBruto = document.getElementById('admin-raw-paste').value;
+            if(!textoBruto.trim()) {
+                alert('Por favor, cole um texto antes de processar.');
+                return;
+            }
+
+            // Tenta adivinhar o cargo na primeira linha ou isolando termos comuns
+            const linhas = textoBruto.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            let tituloDetectado = linhas[0] ? linhas[0].replace(/[^a-zA-Z0-9 À-ÿ]/g, "").substring(0, 50) : 'Vaga Editada';
+            let localDetectado = 'Moçambique';
+            let areaDetectada = 'Geral';
+
+            // Escaneamento de palavras-chave comuns de localização em Moçambique
+            const textoMinusculo = textoBruto.toLowerCase();
+            if(textoMinusculo.includes('maputo')) localDetectado = 'Maputo';
+            else if(textoMinusculo.includes('matola')) localDetectado = 'Matola';
+            else if(textoMinusculo.includes('beira')) localDetectado = 'Beira / Sofala';
+            else if(textoMinusculo.includes('nampula')) localDetectado = 'Nampula';
+            else if(textoMinusculo.includes('tete')) localDetectado = 'Tete';
+
+            // Escaneamento elementar de áreas profissionais comuns
+            if(textoMinusculo.includes('motorista') || textoMinusculo.includes('condutor')) areaDetectada = 'Logística / Transportes';
+            else if(textoMinusculo.includes('contabilidade') || textoMinusculo.includes('contabilista') || textoMinusculo.includes('finanças')) areaDetectada = 'Finanças / Contabilidade';
+            else if(textoMinusculo.includes('ti') || textoMinusculo.includes('informática') || textoMinusculo.includes('desenvolvedor')) areaDetectada = 'Tecnologia da Informação';
+            else if(textoMinusculo.includes('recepcionista') || textoMinusculo.includes('atendimento')) areaDetectada = 'Administração / Atendimento';
+
+            // Injeta os dados sugeridos nos inputs oficiais do formulário
+            document.getElementById('vaga-titulo').value = tituloDetectado;
+            document.getElementById('vaga-area').value = areaDetectada;
+            document.getElementById('vaga-local').value = localDetectado;
+            document.getElementById('vaga-desc').value = textoBruto;
+
+            alert('Dados pré-identificados e inseridos com sucesso! Revise os campos abaixo antes de enviar.');
         }
 
         // --- LÓGICA DE VAGAS ---
@@ -312,10 +464,11 @@
                 desc: document.getElementById('vaga-desc').value,
                 data: new Date().toLocaleDateString('pt-BR')
             };
-            dados.vagas.unshift(novaVaga); // Adiciona no início (mais recente primeiro)
+            dados.vagas.unshift(novaVaga);
             localStorage.setItem('db_vagas', JSON.stringify(dados.vagas));
             document.getElementById('form-vaga').reset();
-            alert('Vaga publicada com sucesso!');
+            document.getElementById('admin-raw-paste').value = '';
+            alert('Vaga integrada com sucesso no banco de dados!');
             switchSection('vagas');
         }
 
@@ -323,7 +476,7 @@
             const container = document.getElementById('lista-vagas');
             container.innerHTML = '';
             if(!lista || lista.length === 0) {
-                container.innerHTML = '<div class="card"><p>Nenhuma vaga encontrada no momento.</p></div>';
+                container.innerHTML = '<div class="card"><p style="color: #64748b;">Nenhuma vaga aberta disponível de momento.</p></div>';
                 return;
             }
             lista.forEach(vaga => {
@@ -331,11 +484,11 @@
                     <div class="card vaga-card">
                         <div class="vaga-header">
                             <span>📂 Área: <b>${vaga.area}</b></span>
-                            <span>📅 ${vaga.data}</span>
+                            <span>📅 Postado em: ${vaga.data}</span>
                         </div>
-                        <h2 style="color: var(--primary-dark); margin-bottom: 0.5rem;">${vaga.titulo}</h2>
-                        <p style="margin-bottom: 0.8rem;">📍 <b>Localização:</b> ${vaga.local}</p>
-                        <p style="white-space: pre-line; background: #f9f9f9; padding: 0.8rem; border-radius: 4px;">${vaga.desc}</p>
+                        <h2 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.4rem;">${vaga.titulo}</h2>
+                        <p style="margin-bottom: 0.8rem; font-size: 0.95rem;">📍 <b>Localização:</b> ${vaga.local}</p>
+                        <p style="white-space: pre-line; background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.95rem; color: #334155;">${vaga.desc}</p>
                     </div>
                 `;
             });
@@ -354,7 +507,7 @@
             renderVagas(filtradas);
         }
 
-        // --- LÓGICA DE CADASTRO DE MEMBROS ---
+        // --- LÓGICA DE CADASTRO ---
         function salvarCandidato(e) {
             e.preventDefault();
             const novoCandidato = {
@@ -365,22 +518,22 @@
             dados.membros.push(novoCandidato);
             localStorage.setItem('db_membros', JSON.stringify(dados.membros));
             document.getElementById('form-candidato').reset();
-            alert('Cadastro realizado! Você está na lista de espera por vagas.');
+            alert('Excelente! Seu perfil já se encontra listado no banco de talentos.');
         }
 
-        // --- LÓGICA DO ADMIN ---
+        // --- LÓGICA DO PAINEL ADMIN ---
         function carregarPainelAdmin() {
             document.getElementById('total-membros').innerText = dados.membros.length;
             const container = document.getElementById('lista-membros');
             container.innerHTML = '';
             if(dados.membros.length === 0) {
-                container.innerHTML = '<p style="color: #666; font-size: 0.9rem;">Nenhum membro aguardando no momento.</p>';
+                container.innerHTML = '<p style="color: #64748b; font-size: 0.9rem; padding: 0.5rem;">Nenhum profissional cadastrado na fila.</p>';
                 return;
             }
             dados.membros.forEach(m => {
                 container.innerHTML += `
-                    <div style="padding: 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem;">
-                        👤 <b>${m.nome}</b> - ${m.area} (📍 ${m.local})
+                    <div style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem;">
+                        👤 <b>${m.nome}</b> - Especialidade: ${m.area} (📍 Cidade: ${m.local})
                     </div>
                 `;
             });
@@ -390,13 +543,13 @@
         function enviarMensagem() {
             const nome = document.getElementById('chat-nome').value || 'Anônimo';
             const texto = document.getElementById('chat-texto').value;
-            if(!texto) return;
+            if(!texto.trim()) return;
 
             const msg = {
                 nome: nome,
                 texto: texto,
                 hora: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
-                isAdmin: nome.toLowerCase() === 'admin'
+                isAdmin: nome.toLowerCase() === 'admin' || isAdminAutenticado && nome.toLowerCase() === 'quinito'
             };
 
             dados.chat.push(msg);
@@ -411,7 +564,7 @@
             dados.chat.forEach(msg => {
                 container.innerHTML += `
                     <div class="chat-msg ${msg.isAdmin ? 'admin' : ''}">
-                        <b>${msg.nome}:</b> ${msg.texto}
+                        <b style="color: var(--primary-dark);">${msg.nome}:</b> ${msg.texto}
                         <div class="msg-meta">${msg.hora}</div>
                     </div>
                 `;
@@ -437,15 +590,15 @@
             container.innerHTML = '';
             dados.depoimentos.forEach(d => {
                 container.innerHTML += `
-                    <div style="border-bottom: 1px dashed #ccc; padding: 0.8rem 0;">
-                        <span class="badge">Sucesso 🎉</span> <b>${d.nome}</b> disse:
-                        <p style="font-style: italic; margin-top: 0.3rem; color: #555;">"${d.texto}"</p>
+                    <div style="border-bottom: 1px dashed #cbd5e1; padding: 1rem 0;">
+                        <span class="badge">Sucesso 🎉</span> <b>${d.nome}</b> escreveu:
+                        <p style="font-style: italic; margin-top: 0.4rem; color: #334155; line-height: 1.5;">"${d.texto}"</p>
                     </div>
                 `;
             });
         }
 
-        // Inicializar a aplicação carregando a view inicial padrão
+        // Inicialização em tempo seguro de carregamento do DOM
         window.addEventListener('DOMContentLoaded', () => {
             renderVagas(dados.vagas);
         });
