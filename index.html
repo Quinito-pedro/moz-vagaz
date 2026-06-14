@@ -425,7 +425,7 @@
         <!-- PAINEL ADMIN -->
         <section id="admin" class="section">
             <div class="card" style="border: 2px solid var(--mz-red);">
-                <h3>🔐 Painel do Administrador (Restrito)</h3>
+                <h3>🔐 Painel do Administrator (Restrito)</h3>
                 <p style="color: #64748b; margin-bottom: 1.5rem;">Ferramentas de publicação rápida para o Administrador Quinito.</p>
                 
                 <div class="smart-paste-area">
@@ -448,19 +448,18 @@
                     <label>Instruções de Candidatura e Detalhes:</label>
                     <textarea id="vaga-desc" rows="5" placeholder="E-mails, links ou contactos diretos..." required></textarea>
 
-                    <button type="submit" class="btn-main" style="background-color: var(--mz-red); width: 100%;">Publicar Oficialmente no VAGAS MOZ</button>
+                    <button type="submit" class="btn-main" style="background-color: var(--mz-red); width: 100%;">Publicar Oficialmente e Notificar no WhatsApp 🚀</button>
                 </form>
 
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--gray-border);">
 
-                <h4>📢 Disparar Alerta Geral Antispam</h4>
+                <h4>📢 Disparar Alerta Geral Manual (Opcional)</h4>
                 <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.8rem;">
-                    Clique no botão verde abaixo para abrir o WhatsApp com um único aviso inteligente contendo o link do site e o resumo das últimas vagas disponíveis.
+                    O sistema já faz o disparo automático acima ao publicar. Mas se precisares de enviar um reforço manual depois, usa o botão abaixo:
                 </p>
                 
-                <!-- BOTÃO DE ENVIO EM MASSA INTELIGENTE COM O LINK DO SITE -->
                 <a href="#" id="btn-disparo-coletivo" target="_blank" class="btn-whatsapp btn-whatsapp-mass">
-                    📢 Enviar Alerta Geral para Todos no WhatsApp
+                    📢 Reenviar Alerta Geral Manual para o WhatsApp
                 </a>
 
                 <h4>👥 Candidatos Cadastrados (<span id="total-membros">0</span>)</h4>
@@ -485,12 +484,13 @@
         let isAdminAutenticado = false;
 
         function obterLinkDoSite() {
-            // Pega o endereço real atual onde o site está rodando de forma 100% dinâmica!
             let urlAtual = window.location.href;
+            // Se estiver rodando localmente em ficheiro
             if (urlAtual.startsWith('file:///')) {
-                return "https://vagasmoz.github.io"; // Link padrão fictício caso estejas a testar offline no PC
+                return "https://vagasmoz.github.io"; 
             }
-            return urlAtual;
+            // Remove âncoras ou parâmetros de busca para o link ir limpo e bonito
+            return urlAtual.split('#')[0].split('?')[0];
         }
 
         function ativarModoAdmin() {
@@ -524,8 +524,18 @@
             const textoBruto = document.getElementById('admin-raw-paste').value;
             if(!textoBruto.trim()) return alert('Por favor, cole um texto primeiro.');
 
+            // Filtra linhas vazias
             const linhas = textoBruto.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            let tituloDetectado = linhas[0] ? linhas[0].replace(/[^a-zA-Z0-9 À-ÿ]/g, "").substring(0, 50) : 'Nova Vaga';
+            
+            // Acha a primeira linha válida que não seja um link de internet direto (proteção contra erro da imagem)
+            let linhaTitulo = "Nova Vaga Disponível";
+            for(let i=0; i<linhas.length; i++){
+                if(!linhas[i].toLowerCase().includes('http') && !linhas[i].toLowerCase().includes('www')){
+                    linhaTitulo = linhas[i].replace(/[^a-zA-Z0-9 À-ÿ,.\-()]/g, "").substring(0, 60);
+                    break;
+                }
+            }
+
             let localDetectado = 'Moçambique';
             let areaDetectada = 'Geral';
 
@@ -534,12 +544,15 @@
             else if(textoMinusculo.includes('matola')) localDetectado = 'Matola';
             else if(textoMinusculo.includes('beira')) localDetectado = 'Beira';
             else if(textoMinusculo.includes('nampula')) localDetectado = 'Nampula';
+            else if(textoMinusculo.includes('quelimane')) localDetectado = 'Quelimane';
+            else if(textoMinusculo.includes('tete')) localDetectado = 'Tete';
 
             if(textoMinusculo.includes('motorista')) areaDetectada = 'Logística / Transportes';
-            else if(textoMinusculo.includes('contabilidade') || textoMinusculo.includes('finanças')) areaDetectada = 'Finanças / Contabilidade';
-            else if(textoMinusculo.includes('ti') || textoMinusculo.includes('informática')) areaDetectada = 'Tecnologia da Informação';
+            else if(textoMinusculo.includes('contabilidade') || textoMinusculo.includes('finanças') || textoMinusculo.includes('gestora')) areaDetectada = 'Finanças / Contabilidade';
+            else if(textoMinusculo.includes('ti') || textoMinusculo.includes('informática') || textoMinusculo.includes('dados')) areaDetectada = 'Tecnologia da Informação';
+            else if(textoMinusculo.includes('saúde') || textoMinusculo.includes('enfermeiro')) areaDetectada = 'Saúde';
 
-            document.getElementById('vaga-titulo').value = tituloDetectado;
+            document.getElementById('vaga-titulo').value = linhaTitulo;
             document.getElementById('vaga-area').value = areaDetectada;
             document.getElementById('vaga-local').value = localDetectado;
             document.getElementById('vaga-desc').value = textoBruto;
@@ -560,24 +573,45 @@
             return textoFormatado;
         }
 
+        // MONTA O TEXTO DA MENSAGEM PADRÃO EXIGIDA POR TI
+        function gerarTextoMensagem(tituloVaga) {
+            let linkSite = obterLinkDoSite();
+            return `📢 *ALERTA DE EMPREGO - VAGAS MOZ* 🇲🇿\n\n` +
+                   `Atenção! Temos *MUITAS VAGAS DISPONÍVEIS NO SITE* prontas para candidatura hoje.\n\n` +
+                   `🔥 *Última Oportunidade:* ${tituloVaga}\n` +
+                   `📌 E dezenas de outros cargos abertos esperando por si!\n\n` +
+                   `🔗 *Clique no link abaixo para entrar no site e ver os contactos:* \n` +
+                   `${linkSite}`;
+        }
+
         function publicarVaga(e) {
             e.preventDefault();
+            const tituloCargo = document.getElementById('vaga-titulo').value;
+
             const novaVaga = {
                 id: Date.now(),
-                titulo: document.getElementById('vaga-titulo').value,
+                titulo: tituloCargo,
                 area: document.getElementById('vaga-area').value,
                 local: document.getElementById('vaga-local').value,
                 desc: document.getElementById('vaga-desc').value,
                 data: new Date().toLocaleDateString('pt-BR')
             };
+
             dados.vagas.unshift(novaVaga);
             localStorage.setItem('db_vagas', JSON.stringify(dados.vagas));
             
+            // Limpa o formulário
             document.getElementById('form-vaga').reset();
             document.getElementById('admin-raw-paste').value = '';
             
-            alert('Vaga publicada com sucesso! O Alerta Geral do WhatsApp foi atualizado automaticamente.');
-            carregarPainelAdmin(); // Atualiza a seção e reconstrói o link inteligente de disparo geral
+            carregarPainelAdmin(); 
+
+            // DISPARO AUTOMÁTICO IMEDIATO AO CLICAR EM PUBLICAR
+            let mensagemPronta = gerarTextoMensagem(tituloCargo);
+            let urlWhatsappNotificacao = `https://wa.me/?text=${encodeURIComponent(mensagemPronta)}`;
+            
+            alert('Vaga guardada com sucesso! O WhatsApp vai abrir agora automaticamente para notificar os candidatos.');
+            window.open(urlWhatsappNotificacao, '_blank');
         }
 
         function renderVagas(lista) {
@@ -652,34 +686,16 @@
             switchSection('vagas');
         }
 
-        // MONTA A MENSAGEM COLETIVA ANTISPAM COM LINK DO SITE E RESUMO
-        function atualizarBotaoDisparoColetivo() {
-            const btnGeral = document.getElementById('btn-disparo-coletivo');
-            let linkSite = obterLinkDoSite();
-            
-            // Pega a última vaga lançada para dar como exemplo principal na mensagem
-            let ultimaVaga = dados.vagas[0];
-            let tituloDestaque = ultimaVaga ? ultimaVaga.titulo : "Várias Áreas";
-            
-            // Texto adaptado à tua exigência de conter "Muitas vagas disponíveis no site"
-            let mensagemColetiva = `📢 *ALERTA DE EMPREGO - VAGAS MOZ* 🇲🇿\n\n` +
-                                   `Grandes novidades! Temos *MUITAS VAGAS DISPONÍVEIS NO SITE* prontas para candidatura hoje.\n\n` +
-                                   `🔥 *Destaque Recente:* ${tituloDestaque}\n` +
-                                   `📌 E muitas outras oportunidades abertas à tua espera!\n\n` +
-                                   `🔗 *Clica no link abaixo para aceder e ver os contactos:* \n` +
-                                   `${linkSite}`;
-
-            // Transforma a mensagem em formato de link para o WhatsApp abrir direto
-            btnGeral.href = `https://wa.me/?text=${encodeURIComponent(mensagemColetiva)}`;
-        }
-
         function carregarPainelAdmin() {
             document.getElementById('total-membros').innerText = dados.membros.length;
             const container = document.getElementById('lista-membros');
             container.innerHTML = '';
             
-            // Atualiza o link do botão de disparo coletivo com as últimas novidades
-            atualizarBotaoDisparoColetivo();
+            // Atualiza o botão reserva manual
+            const btnGeral = document.getElementById('btn-disparo-coletivo');
+            let ultimaVaga = dados.vagas[0];
+            let tituloDestaque = ultimaVaga ? ultimaVaga.titulo : "Novas Oportunidades";
+            btnGeral.href = `https://wa.me/?text=${encodeURIComponent(gerarTextoMensagem(tituloDestaque))}`;
             
             if(dados.membros.length === 0) {
                 container.innerHTML = '<p style="color: #64748b; font-size: 0.9rem; padding: 0.5rem;">Nenhum profissional cadastrado.</p>';
@@ -691,7 +707,7 @@
                     <div class="membro-item">
                         <div>
                             👤 <b>${m.nome}</b> - ${m.area} (📍 ${m.local}) <br>
-                            <small style="color:#64748b;">📱 WhatsApp: ${m.whatsapp}</small>
+                            <small style="color:#64748b;">📱 WhatsApp: ${m.whatsapp || 'Cadastrado'}</small>
                         </div>
                         <span class="badge">Ativo ✔️</span>
                     </div>
