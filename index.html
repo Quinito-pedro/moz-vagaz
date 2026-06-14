@@ -169,6 +169,13 @@
 
         .vaga-card {
             border-left: 6px solid var(--primary);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .vaga-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         
         .vaga-header {
@@ -179,37 +186,32 @@
             margin-bottom: 0.75rem;
         }
 
-        .chat-box, .depoimentos-list {
-            max-height: 400px;
-            overflow-y: auto;
-            background: #f1f5f9;
-            padding: 1.2rem;
+        /* Estilo do Feed de Comentários LinkedIn/Facebook */
+        .feed-comentarios {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .comentario-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--gray-border);
+            padding: 1rem;
         }
 
-        .chat-msg {
-            background: var(--white);
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.6rem;
-            width: fit-content;
-            max-width: 85%;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        .comentario-user {
+            font-weight: bold;
+            color: var(--dark);
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
         }
 
-        .chat-msg.admin {
-            background: #e0f2fe;
-            border-right: 4px solid #0284c7;
-            margin-left: auto;
-        }
-
-        .msg-meta {
-            font-size: 0.7rem;
-            color: #94a3b8;
-            margin-top: 0.25rem;
-            text-align: right;
+        .comentario-texto {
+            font-size: 0.95rem;
+            color: #334155;
+            line-height: 1.5;
         }
 
         .badge {
@@ -221,7 +223,6 @@
             font-weight: 600;
         }
 
-        /* Caixa de Inteligência de Colagem no Painel Admin */
         .smart-paste-area {
             background: #f8fafc;
             border: 2px dashed #94a3b8;
@@ -241,7 +242,6 @@
             position: relative;
         }
 
-        /* Marca d'água oculta/discreta no canto inferior direito */
         .sys-signature {
             position: absolute;
             right: 1.5rem;
@@ -267,7 +267,7 @@
             <nav>
                 <button onclick="switchSection('vagas')" id="btn-vagas" class="active">Ver Vagas</button>
                 <button onclick="switchSection('registro')" id="btn-registro">Fazer Cadastro</button>
-                <button onclick="switchSection('comunidade')" id="btn-comunidade">Chat & Depoimentos</button>
+                <button onclick="switchSection('comunidade')" id="btn-comunidade">Testemunhos</button>
                 <button onclick="switchSection('admin')" id="btn-admin">Painel Admin</button>
             </nav>
         </div>
@@ -276,18 +276,34 @@
     <div class="container">
 
         <section id="vagas" class="section active">
-            <div class="card">
-                <h3>🔍 Encontre sua oportunidade em Moçambique</h3>
-                <p style="margin-bottom: 1.5rem; color: #64748b;">Filtre sua busca por cargo, área de atuação ou localização provincial.</p>
-                <div class="search-box">
-                    <input type="text" id="search-cargo" placeholder="Ex: Motorista, Consultor...">
-                    <input type="text" id="search-area" placeholder="Área profissional...">
-                    <input type="text" id="search-local" placeholder="Ex: Maputo, Beira, Nampula...">
+            <div id="area-busca">
+                <div class="card">
+                    <h3>🔍 Encontre sua oportunidade em Moçambique</h3>
+                    <p style="margin-bottom: 1.5rem; color: #64748b;">Filtre sua busca por cargo, área de atuação ou localização provincial.</p>
+                    <div class="search-box">
+                        <input type="text" id="search-cargo" placeholder="Ex: Motorista, Consultor...">
+                        <input type="text" id="search-area" placeholder="Área profissional...">
+                        <input type="text" id="search-local" placeholder="Ex: Maputo, Beira, Nampula...">
+                    </div>
+                    <button class="btn-main" style="width: 100%;" onclick="filtrarVagas()">Pesquisar Vagas</button>
                 </div>
-                <button class="btn-main" style="width: 100%;" onclick="filtrarVagas()">Pesquisar Vagas</button>
+                <div id="lista-vagas"></div>
             </div>
 
-            <div id="lista-vagas"></div>
+            <div id="detalhe-vaga" style="display: none;">
+                <button class="btn-main" style="background-color: #475569; margin-bottom: 1.5rem;" onclick="fecharVaga()">⬅️ Voltar para a lista</button>
+                <div class="card" style="border-top: 6px solid var(--primary);">
+                    <div class="vaga-header">
+                        <span id="detalhe-area">📂 Área: </span>
+                        <span id="detalhe-data">📅 Postado em: </span>
+                    </div>
+                    <h2 id="detalhe-titulo" style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.8rem;"></h2>
+                    <p style="margin-bottom: 1.5rem; font-size: 1.1rem;"><span id="detalhe-local">📍 <b>Localização:</b> </span></p>
+                    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
+                    <h3>📋 Requisitos e Como Se Candidatar:</h3>
+                    <p id="detalhe-desc" style="white-space: pre-line; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 1rem; color: #334155; line-height: 1.6;"></p>
+                </div>
+            </div>
         </section>
 
         <section id="registro" class="section">
@@ -302,7 +318,7 @@
                     <input type="text" id="cand-area" placeholder="Ex: Administração, TI, Saúde..." required>
 
                     <label>Sua Localização:</label>
-                    <input type="text" id="cand-local" placeholder="Ex: Matola, Chimoio..." required>
+                    <input type="text" id="cand-local" placeholder="Ex: Matola, Chimoio, Beira..." required>
 
                     <button type="submit" class="btn-main" style="width: 100%;">Cadastrar meu Perfil Grátis</button>
                 </form>
@@ -311,24 +327,18 @@
 
         <section id="comunidade" class="section">
             <div class="card">
-                <h3>💬 Chat de Ajuda e Dúvidas Coletivas</h3>
-                <div class="chat-box" id="chat-container"></div>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <input type="text" id="chat-nome" placeholder="Seu Nome" style="flex: 1; min-width: 150px; margin: 0;">
-                    <input type="text" id="chat-texto" placeholder="Pergunte sobre processos seletivos ou envie suporte..." style="flex: 3; min-width: 250px; margin: 0;">
-                    <button class="btn-main" onclick="enviarMensagem()">Enviar</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>🏆 Testemunhos de Sucesso</h3>
-                <p style="color: #64748b; margin-bottom: 1.5rem;">Conseguiu uma vaga? Deixe seu agradecimento ou relato aqui!</p>
-                <div class="depoimentos-list" id="depoimentos-container" style="background: #fff;"></div>
+                <h3>🏆 Feed de Testemunhos de Sucesso</h3>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Conseguiu um emprego ou entrevista? Deixe o seu depoimento ou comentário abaixo para motivar a comunidade!</p>
+                
                 <form id="form-depoimento" onsubmit="salvarDepoimento(event)">
-                    <input type="text" id="dep-nome" placeholder="Seu Nome" required>
-                    <textarea id="dep-texto" placeholder="Conte sua história de sucesso com o VAGAS MOZ..." rows="3" required></textarea>
-                    <button type="submit" class="btn-main">Publicar Meu Relato</button>
+                    <input type="text" id="dep-nome" placeholder="Seu Nome" required style="margin-bottom: 0.8rem;">
+                    <textarea id="dep-texto" placeholder="Escreva aqui o seu testemunho ou agradecimento..." rows="3" required></textarea>
+                    <button type="submit" class="btn-main">Comentar</button>
                 </form>
+
+                <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--gray-border);">
+
+                <div class="feed-comentarios" id="depoimentos-container"></div>
             </div>
         </section>
 
@@ -339,7 +349,7 @@
                 
                 <div class="smart-paste-area">
                     <label style="color: #ea580c;">📋 Colar Texto Bruto (WhatsApp / Telegram / LinkedIn):</label>
-                    <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem;">Cole o texto copiado de qualquer lugar abaixo e clique no botão para que nosso script auto-organize o formulário.</p>
+                    <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem;">Cole a mensagem inteira e o script tentará estruturar os campos.</p>
                     <textarea id="admin-raw-paste" rows="5" placeholder="Cole aqui a mensagem inteira da vaga vinda do grupo..."></textarea>
                     <button type="button" class="btn-main" style="background: #475569;" onclick="processarTextoBruto()">Extrair Dados da Vaga</button>
                 </div>
@@ -376,31 +386,24 @@
     </footer>
 
     <script>
-        // Memória em LocalStorage escalável
         let dados = {
             vagas: JSON.parse(localStorage.getItem('db_vagas')) || [],
             membros: JSON.parse(localStorage.getItem('db_membros')) || [],
-            chat: JSON.parse(localStorage.getItem('db_chat')) || [],
             depoimentos: JSON.parse(localStorage.getItem('db_depoimentos')) || []
         };
 
-        // Estado Global de Acesso Autenticado
         let isAdminAutenticado = false;
 
-        // Ativação da Camada de Segurança ao clicar na assinatura
         function ativarModoAdmin() {
             isAdminAutenticado = true;
-            const btnAdmin = document.getElementById('btn-admin');
-            btnAdmin.style.display = 'inline-block'; // Exibe o botão secretamente
-            alert('Modo Administrador Autorizado. O Painel Admin agora está acessível no menu superior.');
+            document.getElementById('btn-admin').style.display = 'inline-block';
+            alert('Modo Administrador Autorizado.');
             switchSection('admin');
         }
 
-        // Sistema Limpo de Chaveamento de Abas
         function switchSection(sectionId) {
-            // Validação de segurança básica no front-end
             if(sectionId === 'admin' && !isAdminAutenticado) {
-                alert('Acesso negado. Esta área é exclusiva do administradorQuinito.');
+                alert('Acesso negado.');
                 return;
             }
 
@@ -410,50 +413,40 @@
             document.getElementById(sectionId).classList.add('active');
             document.getElementById('btn-' + sectionId).classList.add('active');
 
-            if(sectionId === 'vagas') renderVagas(dados.vagas);
+            if(sectionId === 'vagas') {
+                fecharVaga(); 
+                renderVagas(dados.vagas);
+            }
             if(sectionId === 'admin') carregarPainelAdmin();
-            if(sectionId === 'comunidade') { renderChat(); renderDepoimentos(); }
+            if(sectionId === 'comunidade') renderDepoimentos();
         }
 
-        // Algoritmo Regex de Processamento inteligente de Texto Colado da Web/Redes Sociais
         function processarTextoBruto() {
             const textoBruto = document.getElementById('admin-raw-paste').value;
-            if(!textoBruto.trim()) {
-                alert('Por favor, cole um texto antes de processar.');
-                return;
-            }
+            if(!textoBruto.trim()) return alert('Por favor, cole um texto primeiro.');
 
-            // Tenta adivinhar o cargo na primeira linha ou isolando termos comuns
             const linhas = textoBruto.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            
-            let tituloDetectado = linhas[0] ? linhas[0].replace(/[^a-zA-Z0-9 À-ÿ]/g, "").substring(0, 50) : 'Vaga Editada';
+            let tituloDetectado = linhas[0] ? linhas[0].replace(/[^a-zA-Z0-9 À-ÿ]/g, "").substring(0, 50) : 'Nova Vaga';
             let localDetectado = 'Moçambique';
             let areaDetectada = 'Geral';
 
-            // Escaneamento de palavras-chave comuns de localização em Moçambique
             const textoMinusculo = textoBruto.toLowerCase();
             if(textoMinusculo.includes('maputo')) localDetectado = 'Maputo';
             else if(textoMinusculo.includes('matola')) localDetectado = 'Matola';
-            else if(textoMinusculo.includes('beira')) localDetectado = 'Beira / Sofala';
+            else if(textoMinusculo.includes('beira')) localDetectado = 'Beira';
             else if(textoMinusculo.includes('nampula')) localDetectado = 'Nampula';
-            else if(textoMinusculo.includes('tete')) localDetectado = 'Tete';
 
-            // Escaneamento elementar de áreas profissionais comuns
-            if(textoMinusculo.includes('motorista') || textoMinusculo.includes('condutor')) areaDetectada = 'Logística / Transportes';
-            else if(textoMinusculo.includes('contabilidade') || textoMinusculo.includes('contabilista') || textoMinusculo.includes('finanças')) areaDetectada = 'Finanças / Contabilidade';
-            else if(textoMinusculo.includes('ti') || textoMinusculo.includes('informática') || textoMinusculo.includes('desenvolvedor')) areaDetectada = 'Tecnologia da Informação';
-            else if(textoMinusculo.includes('recepcionista') || textoMinusculo.includes('atendimento')) areaDetectada = 'Administração / Atendimento';
+            if(textoMinusculo.includes('motorista')) areaDetectada = 'Logística / Transportes';
+            else if(textoMinusculo.includes('contabilidade') || textoMinusculo.includes('finanças')) areaDetectada = 'Finanças / Contabilidade';
+            else if(textoMinusculo.includes('ti') || textoMinusculo.includes('informática')) areaDetectada = 'Tecnologia da Informação';
 
-            // Injeta os dados sugeridos nos inputs oficiais do formulário
             document.getElementById('vaga-titulo').value = tituloDetectado;
             document.getElementById('vaga-area').value = areaDetectada;
             document.getElementById('vaga-local').value = localDetectado;
             document.getElementById('vaga-desc').value = textoBruto;
-
-            alert('Dados pré-identificados e inseridos com sucesso! Revise os campos abaixo antes de enviar.');
         }
 
-        // --- LÓGICA DE VAGAS ---
+        // --- SISTEMA DE VISUALIZAÇÃO DE VAGAS (CLICÁVEL) ---
         function publicarVaga(e) {
             e.preventDefault();
             const novaVaga = {
@@ -468,7 +461,7 @@
             localStorage.setItem('db_vagas', JSON.stringify(dados.vagas));
             document.getElementById('form-vaga').reset();
             document.getElementById('admin-raw-paste').value = '';
-            alert('Vaga integrada com sucesso no banco de dados!');
+            alert('Vaga publicada!');
             switchSection('vagas');
         }
 
@@ -476,22 +469,42 @@
             const container = document.getElementById('lista-vagas');
             container.innerHTML = '';
             if(!lista || lista.length === 0) {
-                container.innerHTML = '<div class="card"><p style="color: #64748b;">Nenhuma vaga aberta disponível de momento.</p></div>';
+                container.innerHTML = '<div class="card"><p style="color: #64748b;">Nenhuma vaga encontrada.</p></div>';
                 return;
             }
             lista.forEach(vaga => {
                 container.innerHTML += `
-                    <div class="card vaga-card">
+                    <div class="card vaga-card" onclick="verDetalhesVaga(${vaga.id})">
                         <div class="vaga-header">
                             <span>📂 Área: <b>${vaga.area}</b></span>
-                            <span>📅 Postado em: ${vaga.data}</span>
+                            <span>📅 ${vaga.data}</span>
                         </div>
-                        <h2 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.4rem;">${vaga.titulo}</h2>
-                        <p style="margin-bottom: 0.8rem; font-size: 0.95rem;">📍 <b>Localização:</b> ${vaga.local}</p>
-                        <p style="white-space: pre-line; background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.95rem; color: #334155;">${vaga.desc}</p>
+                        <h2 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.3rem;">${vaga.titulo}</h2>
+                        <p style="color: #475569; font-size: 0.95rem;">📍 <b>Localização:</b> ${vaga.local}</p>
+                        <span style="color: var(--primary); font-size: 0.85rem; font-weight: bold; display: block; margin-top: 0.5rem;">👉 Clique para ver contactos e detalhes</span>
                     </div>
                 `;
             });
+        }
+
+        function verDetalhesVaga(id) {
+            const vaga = dados.vagas.find(v => v.id === id);
+            if(!vaga) return;
+
+            document.getElementById('area-busca').style.display = 'none';
+            document.getElementById('detalhe-vaga').style.display = 'block';
+
+            document.getElementById('detalhe-titulo').innerText = vaga.titulo;
+            document.getElementById('detalhe-area').innerHTML = `📂 Área: <b>${vaga.area}</b>`;
+            document.getElementById('detalhe-data').innerText = `📅 Postado em: ${vaga.data}`;
+            document.getElementById('detalhe-local').innerHTML = `📍 <b>Localização:</b> ${vaga.local}`;
+            document.getElementById('detalhe-desc').innerText = vaga.desc;
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function fecharVaga() {
+            document.getElementById('detalhe-vaga').style.display = 'none';
+            document.getElementById('area-busca').style.display = 'block';
         }
 
         function filtrarVagas() {
@@ -507,7 +520,7 @@
             renderVagas(filtradas);
         }
 
-        // --- LÓGICA DE CADASTRO ---
+        // --- SISTEMA DE CADASTRO COM REDIRECIONAMENTO ---
         function salvarCandidato(e) {
             e.preventDefault();
             const novoCandidato = {
@@ -518,16 +531,19 @@
             dados.membros.push(novoCandidato);
             localStorage.setItem('db_membros', JSON.stringify(dados.membros));
             document.getElementById('form-candidato').reset();
+            
             alert('Excelente! Seu perfil já se encontra listado no banco de talentos.');
+            
+            // Redireciona automaticamente para a aba de Vagas
+            switchSection('vagas');
         }
 
-        // --- LÓGICA DO PAINEL ADMIN ---
         function carregarPainelAdmin() {
             document.getElementById('total-membros').innerText = dados.membros.length;
             const container = document.getElementById('lista-membros');
             container.innerHTML = '';
             if(dados.membros.length === 0) {
-                container.innerHTML = '<p style="color: #64748b; font-size: 0.9rem; padding: 0.5rem;">Nenhum profissional cadastrado na fila.</p>';
+                container.innerHTML = '<p style="color: #64748b; font-size: 0.9rem; padding: 0.5rem;">Nenhum profissional cadastrado.</p>';
                 return;
             }
             dados.membros.forEach(m => {
@@ -539,47 +555,14 @@
             });
         }
 
-        // --- LÓGICA DO CHAT ---
-        function enviarMensagem() {
-            const nome = document.getElementById('chat-nome').value || 'Anônimo';
-            const texto = document.getElementById('chat-texto').value;
-            if(!texto.trim()) return;
-
-            const msg = {
-                nome: nome,
-                texto: texto,
-                hora: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
-                isAdmin: nome.toLowerCase() === 'admin' || isAdminAutenticado && nome.toLowerCase() === 'quinito'
-            };
-
-            dados.chat.push(msg);
-            localStorage.setItem('db_chat', JSON.stringify(dados.chat));
-            document.getElementById('chat-texto').value = '';
-            renderChat();
-        }
-
-        function renderChat() {
-            const container = document.getElementById('chat-container');
-            container.innerHTML = '';
-            dados.chat.forEach(msg => {
-                container.innerHTML += `
-                    <div class="chat-msg ${msg.isAdmin ? 'admin' : ''}">
-                        <b style="color: var(--primary-dark);">${msg.nome}:</b> ${msg.texto}
-                        <div class="msg-meta">${msg.hora}</div>
-                    </div>
-                `;
-            });
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // --- LÓGICA DE DEPOIMENTOS ---
+        // --- FEED DE COMENTÁRIOS / TESTEMUNHOS ---
         function salvarDepoimento(e) {
             e.preventDefault();
             const dep = {
                 nome: document.getElementById('dep-nome').value,
                 texto: document.getElementById('dep-texto').value
             };
-            dados.depoimentos.push(dep);
+            dados.depoimentos.unshift(dep); // Adiciona no início para o mais recente aparecer primeiro
             localStorage.setItem('db_depoimentos', JSON.stringify(dados.depoimentos));
             document.getElementById('form-depoimento').reset();
             renderDepoimentos();
@@ -588,17 +571,20 @@
         function renderDepoimentos() {
             const container = document.getElementById('depoimentos-container');
             container.innerHTML = '';
+            if(dados.depoimentos.length === 0) {
+                container.innerHTML = '<p style="color: #64748b; font-style: italic;">Seja o primeiro a deixar um comentário!</p>';
+                return;
+            }
             dados.depoimentos.forEach(d => {
                 container.innerHTML += `
-                    <div style="border-bottom: 1px dashed #cbd5e1; padding: 1rem 0;">
-                        <span class="badge">Sucesso 🎉</span> <b>${d.nome}</b> escreveu:
-                        <p style="font-style: italic; margin-top: 0.4rem; color: #334155; line-height: 1.5;">"${d.texto}"</p>
+                    <div class="comentario-item">
+                        <div class="comentario-user">👤 ${d.nome} <span class="badge" style="margin-left: 5px;">Membro</span></div>
+                        <div class="comentario-texto">"${d.texto}"</div>
                     </div>
                 `;
             });
         }
 
-        // Inicialização em tempo seguro de carregamento do DOM
         window.addEventListener('DOMContentLoaded', () => {
             renderVagas(dados.vagas);
         });
