@@ -6,11 +6,17 @@
     <title>VAGAS MOZ - Portal de Emprego</title>
     <style>
         :root {
-            --primary: #0056b3; /* Azul Profissional Corporativo */
-            --primary-dark: #003d80;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --white: #ffffff;
+            /* Cores Inspiradas no Emblema e Bandeira Nacional de Moçambique */
+            --mz-green: #007a5e;       /* Verde da terra */
+            --mz-black: #000000;       /* Preto do continente */
+            --mz-yellow: #fcd116;      /* Amarelo das riquezas do subsolo */
+            --mz-red: #d21034;         /* Vermelho da luta e resistência */
+            --mz-white: #ffffff;
+            
+            --primary: var(--mz-green);
+            --primary-dark: #005c46;
+            --dark: #111827;
+            --light: #f0fdf4;          /* Fundo verde-claro ultra suave para leitura confortável */
             --text: #0f172a;
             --gray-border: #cbd5e1;
         }
@@ -23,7 +29,8 @@
         }
 
         body {
-            background-color: var(--light);
+            /* Fundo com degradê suave remetendo às cores nacionais */
+            background: linear-gradient(135deg, #e6f4ea 0%, #f0fdf4 100%);
             color: var(--text);
             display: flex;
             flex-direction: column;
@@ -31,13 +38,14 @@
         }
 
         header {
-            background-color: var(--dark);
-            color: var(--white);
+            background-color: var(--mz-black);
+            color: var(--mz-white);
             padding: 1.2rem 1rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            border-bottom: 4px solid var(--mz-yellow); /* Detalhe em amarelo nacional */
         }
 
         .header-container {
@@ -46,47 +54,58 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 800;
             letter-spacing: -0.5px;
-            color: var(--white);
+            color: var(--mz-white);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .logo span {
-            color: #38bdf8;
+            color: var(--mz-yellow);
+            border-bottom: 2px solid var(--mz-red);
+        }
+
+        nav {
+            display: flex;
+            gap: 0.5rem;
         }
 
         nav button {
             background: transparent;
             border: 1px solid rgba(255,255,255,0.2);
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.9);
             padding: 0.6rem 1.2rem;
             cursor: pointer;
             border-radius: 6px;
-            margin-left: 0.5rem;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.2s ease;
         }
 
         nav button:hover, nav button.active {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: var(--white);
+            background-color: var(--mz-red);
+            border-color: var(--mz-red);
+            color: var(--mz-white);
         }
 
         #btn-admin {
             display: none; 
-            background-color: #9a3412;
-            border-color: #ea580c;
+            background-color: #7c2d12;
+            border-color: var(--mz-red);
         }
 
+        /* Contentor Otimizado para Telas Grandes (Computador) e Pequenas (Telemóvel) */
         .container {
-            max-width: 1200px;
+            width: 100%;
+            max-width: 1000px; /* Largura ideal para leitura centralizada em ecrãs grandes */
             margin: 2rem auto;
-            padding: 0 1rem;
+            padding: 0 1.2rem;
             flex: 1;
         }
 
@@ -96,55 +115,64 @@
 
         .section.active {
             display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .card {
             background: var(--white);
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+            border-radius: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
             margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
         }
 
         h3 {
             margin-bottom: 1rem;
-            font-size: 1.3rem;
-            color: var(--dark);
+            font-size: 1.4rem;
+            color: var(--mz-black);
+            border-left: 4px solid var(--mz-red);
+            padding-left: 8px;
         }
 
         label {
             display: block;
             font-weight: 600;
             font-size: 0.9rem;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.4rem;
             color: #475569;
         }
 
         input, textarea, select {
             width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 1.2rem;
-            border: 1px solid var(--gray-border);
-            border-radius: 6px;
+            padding: 0.85rem;
+            margin-bottom: 1.4rem;
+            border: 2px solid var(--gray-border);
+            border-radius: 8px;
             font-size: 1rem;
             background-color: #fff;
             color: var(--text);
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
         input:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+            border-color: var(--mz-green);
+            box-shadow: 0 0 0 3px rgba(0, 122, 94, 0.15);
         }
 
         button.btn-main {
-            background-color: var(--primary);
+            background-color: var(--mz-green);
             color: var(--white);
             border: none;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            border-radius: 6px;
+            padding: 0.85rem 1.75rem;
+            font-weight: 700;
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.2s;
         }
@@ -153,39 +181,31 @@
             background-color: var(--primary-dark);
         }
 
-        /* Estilo da nova Barra Única de Pesquisa */
+        /* Barra Única de Pesquisa Avançada */
         .single-search-box {
             position: relative;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .single-search-box input {
-            padding: 1rem 1.2rem;
+            padding: 1.1rem 1.5rem;
             font-size: 1.1rem;
             border-radius: 50px;
-            border: 2px solid var(--gray-border);
+            border: 2px solid var(--mz-green);
             margin-bottom: 0;
+            box-shadow: 0 4px 10px rgba(0, 122, 94, 0.08);
         }
 
-        .single-search-box input:focus {
-            border-color: var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            .header-container { flex-direction: column; gap: 1rem; }
-            nav { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
-            nav button { margin: 0; }
-        }
-
+        /* Cartões de Vagas */
         .vaga-card {
-            border-left: 6px solid var(--primary);
+            border-left: 6px solid var(--mz-red); /* Destaque em Vermelho */
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .vaga-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
         }
         
         .vaga-header {
@@ -196,52 +216,53 @@
             margin-bottom: 0.75rem;
         }
 
-        /* Estilos para os links automáticos clicáveis dentro da descrição */
         .vaga-link-automatico {
-            color: #0056b3;
+            color: #2563eb;
             text-decoration: underline;
             font-weight: 600;
             word-break: break-all;
         }
 
         .vaga-link-automatico:hover {
-            color: #003d80;
+            color: #1d4ed8;
         }
 
+        /* Feed de Comentários */
         .feed-comentarios {
             margin-top: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.2rem;
         }
 
         .comentario-item {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1rem;
+            border-radius: 10px;
+            padding: 1.2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
         .comentario-user {
             font-weight: bold;
-            color: var(--dark);
+            color: var(--mz-black);
             font-size: 0.95rem;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.35rem;
         }
 
         .comentario-texto {
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #334155;
             line-height: 1.5;
         }
 
         .badge {
-            background: #dbeafe;
-            color: #1e40af;
+            background: #e6f4ea;
+            color: var(--mz-green);
             padding: 0.25rem 0.6rem;
             border-radius: 50px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .smart-paste-area {
@@ -253,20 +274,20 @@
         }
 
         footer {
-            background-color: var(--dark);
+            background-color: var(--mz-black);
             color: #94a3b8;
             text-align: center;
-            padding: 1.5rem;
+            padding: 1.8rem;
             font-size: 0.9rem;
             margin-top: auto;
-            border-top: 1px solid #334155;
+            border-top: 4px solid var(--mz-red);
             position: relative;
         }
 
         .sys-signature {
             position: absolute;
             right: 1.5rem;
-            bottom: 1.5rem;
+            bottom: 1.8rem;
             font-size: 0.7rem;
             color: #475569;
             text-decoration: none;
@@ -274,9 +295,41 @@
             user-select: none;
             font-style: italic;
         }
-        
-        .sys-signature:hover {
-            color: #64748b;
+
+        /* 📱 ADAPTAÇÃO PARA TELAS PEQUENAS (MEDIA QUERIES) */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            .header-container { 
+                flex-direction: column; 
+                gap: 1rem; 
+            }
+            nav { 
+                display: flex; 
+                flex-wrap: wrap; 
+                gap: 0.4rem; 
+                justify-content: center; 
+                width: 100%;
+            }
+            nav button { 
+                margin: 0; 
+                flex: 1;
+                min-width: 100px;
+                font-size: 0.85rem;
+                padding: 0.5rem 0.8rem;
+            }
+            .container {
+                margin: 1rem auto;
+                padding: 0 0.8rem;
+            }
+            .card {
+                padding: 1.2rem;
+                border-radius: 10px;
+            }
+            h2 {
+                font-size: 1.2rem !important;
+            }
         }
     </style>
 </head>
@@ -284,7 +337,7 @@
 
     <header>
         <div class="header-container">
-            <h2 class="logo">📢 VAGAS<span>MOZ</span></h2>
+            <h2 class="logo">🇲🇿 VAGAS<span>MOZ</span></h2>
             <nav>
                 <button onclick="switchSection('vagas')" id="btn-vagas" class="active">Ver Vagas</button>
                 <button onclick="switchSection('registro')" id="btn-registro">Fazer Cadastro</button>
@@ -296,34 +349,37 @@
 
     <div class="container">
 
+        <!-- TELA DE VAGAS -->
         <section id="vagas" class="section active">
             <div id="area-busca">
                 <div class="single-search-box">
-                    <input type="text" id="search-vagas-input" oninput="filtrarVagasUnico()" placeholder="🔎 Digite o cargo, província ou palavra-chave...">
+                    <input type="text" id="search-vagas-input" oninput="filtrarVagasUnico()" placeholder="🔎 Procure por cargo, província ou palavra-chave...">
                 </div>
                 <div id="lista-vagas"></div>
             </div>
 
+            <!-- Detalhes da Vaga Otimizado -->
             <div id="detalhe-vaga" style="display: none;">
                 <button class="btn-main" style="background-color: #475569; margin-bottom: 1.5rem;" onclick="fecharVaga()">⬅️ Voltar para a lista</button>
-                <div class="card" style="border-top: 6px solid var(--primary);">
+                <div class="card" style="border-top: 6px solid var(--mz-green);">
                     <div class="vaga-header">
                         <span id="detalhe-area">📂 Área: </span>
                         <span id="detalhe-data">📅 Postado em: </span>
                     </div>
-                    <h2 id="detalhe-titulo" style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.8rem;"></h2>
+                    <h2 id="detalhe-titulo" style="color: var(--mz-green); margin-bottom: 0.5rem; font-size: 1.8rem;"></h2>
                     <p style="margin-bottom: 1.5rem; font-size: 1.1rem;"><span id="detalhe-local">📍 <b>Localização:</b> </span></p>
                     <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
-                    <h3>📋 Requisitos e Como Se Candidatar:</h3>
+                    <h3>📋 Informações Gerais e Contactos:</h3>
                     <div id="detalhe-desc" style="white-space: pre-line; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 1rem; color: #334155; line-height: 1.6;"></div>
                 </div>
             </div>
         </section>
 
+        <!-- TELA DE CADASTRO -->
         <section id="registro" class="section">
             <div class="card">
-                <h3>📝 Entre na Lista de Candidatos Visíveis</h3>
-                <p style="color: #64748b; margin-bottom: 1.5rem;">Fique disponível na nossa base para que recrutadores encontrem seu perfil.</p>
+                <h3>📝 Registo na Lista de Candidatos Visíveis</h3>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Fique visível na nossa base para que recrutadores locais encontrem seu perfil.</p>
                 <form id="form-candidato" onsubmit="salvarCandidato(event)">
                     <label>Nome Completo:</label>
                     <input type="text" id="cand-nome" required>
@@ -339,15 +395,16 @@
             </div>
         </section>
 
+        <!-- TELA DE TESTEMUNHOS -->
         <section id="comunidade" class="section">
             <div class="card">
                 <h3>🏆 Feed de Testemunhos de Sucesso</h3>
-                <p style="color: #64748b; margin-bottom: 1.5rem;">Conseguiu um emprego ou entrevista? Deixe o seu depoimento abaixo!</p>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Conseguiu um emprego ou entrevista? Partilhe o seu relato com os outros moçambicanos!</p>
                 
                 <form id="form-depoimento" onsubmit="salvarDepoimento(event)">
                     <input type="text" id="dep-nome" placeholder="Seu Nome" required style="margin-bottom: 0.8rem;">
                     <textarea id="dep-texto" placeholder="Escreva aqui o seu testemunho ou agradecimento..." rows="3" required></textarea>
-                    <button type="submit" class="btn-main">Comentar</button>
+                    <button type="submit" class="btn-main" style="background-color: var(--mz-red);">Comentar</button>
                 </form>
 
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--gray-border);">
@@ -356,14 +413,15 @@
             </div>
         </section>
 
+        <!-- PAINEL ADMIN -->
         <section id="admin" class="section">
-            <div class="card" style="border: 2px solid #ea580c;">
+            <div class="card" style="border: 2px solid var(--mz-red);">
                 <h3>🔐 Painel do Administrador (Restrito)</h3>
-                <p style="color: #64748b; margin-bottom: 1.5rem;">Ferramentas avançadas para publicação rápida.</p>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Ferramentas de publicação rápida para o Administrador Quinito.</p>
                 
                 <div class="smart-paste-area">
-                    <label style="color: #ea580c;">📋 Colar Texto Bruto:</label>
-                    <textarea id="admin-raw-paste" rows="5" placeholder="Cole aqui a mensagem inteira da vaga vinda do grupo..."></textarea>
+                    <label style="color: var(--mz-red);">📋 Colar Texto Bruto:</label>
+                    <textarea id="admin-raw-paste" rows="5" placeholder="Cole aqui a mensagem vinda das redes sociais..."></textarea>
                     <button type="button" class="btn-main" style="background: #475569;" onclick="processarTextoBruto()">Extrair Dados da Vaga</button>
                 </div>
 
@@ -379,9 +437,9 @@
                     <input type="text" id="vaga-local" required>
 
                     <label>Instruções de Candidatura e Detalhes:</label>
-                    <textarea id="vaga-desc" rows="5" placeholder="Informações de contato, e-mail ou link de inscrição..." required></textarea>
+                    <textarea id="vaga-desc" rows="5" placeholder="E-mails, links ou contactos diretos..." required></textarea>
 
-                    <button type="submit" class="btn-main" style="background-color: #ea580c; width: 100%;">Publicar Oficialmente no VAGAS MOZ</button>
+                    <button type="submit" class="btn-main" style="background-color: var(--mz-red); width: 100%;">Publicar Oficialmente no VAGAS MOZ</button>
                 </form>
 
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--gray-border);">
@@ -407,7 +465,7 @@
 
         let isAdminAutenticado = false;
 
-        function ativarModoAdmin() {
+        function activarModoAdmin() {
             isAdminAutenticado = true;
             document.getElementById('btn-admin').style.display = 'inline-block';
             alert('Modo Administrador Autorizado.');
@@ -459,27 +517,19 @@
             document.getElementById('vaga-desc').value = textoBruto;
         }
 
-        // --- CONVERSOR INTELIGENTE DE LINKS E EMAILS ---
+        // --- DETETOR E CONVERSOR DE LINKS EM TEXTO ---
         function converterTextoParaLinks(texto) {
             if(!texto) return "";
-            
-            // Regex para capturar links HTTP/HTTPS
             const regexUrl = /(https?:\/\/[^\s]+)/g;
-            // Regex para capturar emails válidos
             const regexEmail = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g;
 
             let textoFormatado = texto;
-            
-            // Substitui URLs reais por tags <a> HTML funcionais
             textoFormatado = textoFormatado.replace(regexUrl, function(url) {
                 return `<a href="${url}" target="_blank" class="vaga-link-automatico">${url}</a>`;
             });
-
-            // Substitui e-mails reais por links de envio "mailto:"
             textoFormatado = textoFormatado.replace(regexEmail, function(email) {
                 return `<a href="mailto:${email}" class="vaga-link-automatico">${email}</a>`;
             });
-
             return textoFormatado;
         }
 
@@ -515,9 +565,9 @@
                             <span>📂 Área: <b>${vaga.area}</b></span>
                             <span>📅 ${vaga.data}</span>
                         </div>
-                        <h2 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.3rem;">${vaga.titulo}</h2>
+                        <h2 style="color: var(--mz-green); margin-bottom: 0.5rem; font-size: 1.3rem;">${vaga.titulo}</h2>
                         <p style="color: #475569; font-size: 0.95rem;">📍 <b>Localização:</b> ${vaga.local}</p>
-                        <span style="color: var(--primary); font-size: 0.85rem; font-weight: bold; display: block; margin-top: 0.5rem;">👉 Clique para ver contactos e detalhes</span>
+                        <span style="color: var(--mz-red); font-size: 0.85rem; font-weight: bold; display: block; margin-top: 0.5rem;">👉 Clique para ver contactos e detalhes</span>
                     </div>
                 `;
             });
@@ -534,8 +584,6 @@
             document.getElementById('detalhe-area').innerHTML = `📂 Área: <b>${vaga.area}</b>`;
             document.getElementById('detalhe-data').innerText = `📅 Postado em: ${vaga.data}`;
             document.getElementById('detalhe-local').innerHTML = `📍 <b>Localização:</b> ${vaga.local}`;
-            
-            // Aqui aplicamos o conversor automático antes de injetar no HTML
             document.getElementById('detalhe-desc').innerHTML = converterTextoParaLinks(vaga.desc);
             
             window.scrollTo({top: 0, behavior: 'smooth'});
@@ -546,10 +594,8 @@
             document.getElementById('area-busca').style.display = 'block';
         }
 
-        // --- NOVA BUSCA ÚNICA INTEGRADA ---
         function filtrarVagasUnico() {
             const busca = document.getElementById('search-vagas-input').value.toLowerCase();
-
             const filtradas = dados.vagas.filter(vaga => {
                 return vaga.titulo.toLowerCase().includes(busca) ||
                        vaga.area.toLowerCase().includes(busca) ||
