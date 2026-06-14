@@ -78,7 +78,7 @@
         }
 
         #btn-admin {
-            display: none; /* Escondido por padrão para usuários comuns */
+            display: none; 
             background-color: #9a3412;
             border-color: #ea580c;
         }
@@ -153,15 +153,25 @@
             background-color: var(--primary-dark);
         }
 
-        .search-box {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 1rem;
+        /* Estilo da nova Barra Única de Pesquisa */
+        .single-search-box {
+            position: relative;
             margin-bottom: 1.5rem;
         }
 
+        .single-search-box input {
+            padding: 1rem 1.2rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            border: 2px solid var(--gray-border);
+            margin-bottom: 0;
+        }
+
+        .single-search-box input:focus {
+            border-color: var(--primary);
+        }
+
         @media (max-width: 768px) {
-            .search-box { grid-template-columns: 1fr; }
             .header-container { flex-direction: column; gap: 1rem; }
             nav { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
             nav button { margin: 0; }
@@ -186,7 +196,18 @@
             margin-bottom: 0.75rem;
         }
 
-        /* Estilo do Feed de Comentários LinkedIn/Facebook */
+        /* Estilos para os links automáticos clicáveis dentro da descrição */
+        .vaga-link-automatico {
+            color: #0056b3;
+            text-decoration: underline;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .vaga-link-automatico:hover {
+            color: #003d80;
+        }
+
         .feed-comentarios {
             margin-top: 1.5rem;
             display: flex;
@@ -277,15 +298,8 @@
 
         <section id="vagas" class="section active">
             <div id="area-busca">
-                <div class="card">
-                    <h3>🔍 Encontre sua oportunidade em Moçambique</h3>
-                    <p style="margin-bottom: 1.5rem; color: #64748b;">Filtre sua busca por cargo, área de atuação ou localização provincial.</p>
-                    <div class="search-box">
-                        <input type="text" id="search-cargo" placeholder="Ex: Motorista, Consultor...">
-                        <input type="text" id="search-area" placeholder="Área profissional...">
-                        <input type="text" id="search-local" placeholder="Ex: Maputo, Beira, Nampula...">
-                    </div>
-                    <button class="btn-main" style="width: 100%;" onclick="filtrarVagas()">Pesquisar Vagas</button>
+                <div class="single-search-box">
+                    <input type="text" id="search-vagas-input" oninput="filtrarVagasUnico()" placeholder="🔎 Digite o cargo, província ou palavra-chave...">
                 </div>
                 <div id="lista-vagas"></div>
             </div>
@@ -301,7 +315,7 @@
                     <p style="margin-bottom: 1.5rem; font-size: 1.1rem;"><span id="detalhe-local">📍 <b>Localização:</b> </span></p>
                     <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
                     <h3>📋 Requisitos e Como Se Candidatar:</h3>
-                    <p id="detalhe-desc" style="white-space: pre-line; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 1rem; color: #334155; line-height: 1.6;"></p>
+                    <div id="detalhe-desc" style="white-space: pre-line; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 1rem; color: #334155; line-height: 1.6;"></div>
                 </div>
             </div>
         </section>
@@ -328,7 +342,7 @@
         <section id="comunidade" class="section">
             <div class="card">
                 <h3>🏆 Feed de Testemunhos de Sucesso</h3>
-                <p style="color: #64748b; margin-bottom: 1.5rem;">Conseguiu um emprego ou entrevista? Deixe o seu depoimento ou comentário abaixo para motivar a comunidade!</p>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Conseguiu um emprego ou entrevista? Deixe o seu depoimento abaixo!</p>
                 
                 <form id="form-depoimento" onsubmit="salvarDepoimento(event)">
                     <input type="text" id="dep-nome" placeholder="Seu Nome" required style="margin-bottom: 0.8rem;">
@@ -345,11 +359,10 @@
         <section id="admin" class="section">
             <div class="card" style="border: 2px solid #ea580c;">
                 <h3>🔐 Painel do Administrador (Restrito)</h3>
-                <p style="color: #64748b; margin-bottom: 1.5rem;">Ferramentas avançadas para publicação rápida de texto capturado em redes sociais.</p>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Ferramentas avançadas para publicação rápida.</p>
                 
                 <div class="smart-paste-area">
-                    <label style="color: #ea580c;">📋 Colar Texto Bruto (WhatsApp / Telegram / LinkedIn):</label>
-                    <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem;">Cole a mensagem inteira e o script tentará estruturar os campos.</p>
+                    <label style="color: #ea580c;">📋 Colar Texto Bruto:</label>
                     <textarea id="admin-raw-paste" rows="5" placeholder="Cole aqui a mensagem inteira da vaga vinda do grupo..."></textarea>
                     <button type="button" class="btn-main" style="background: #475569;" onclick="processarTextoBruto()">Extrair Dados da Vaga</button>
                 </div>
@@ -446,7 +459,30 @@
             document.getElementById('vaga-desc').value = textoBruto;
         }
 
-        // --- SISTEMA DE VISUALIZAÇÃO DE VAGAS (CLICÁVEL) ---
+        // --- CONVERSOR INTELIGENTE DE LINKS E EMAILS ---
+        function converterTextoParaLinks(texto) {
+            if(!texto) return "";
+            
+            // Regex para capturar links HTTP/HTTPS
+            const regexUrl = /(https?:\/\/[^\s]+)/g;
+            // Regex para capturar emails válidos
+            const regexEmail = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/g;
+
+            let textoFormatado = texto;
+            
+            // Substitui URLs reais por tags <a> HTML funcionais
+            textoFormatado = textoFormatado.replace(regexUrl, function(url) {
+                return `<a href="${url}" target="_blank" class="vaga-link-automatico">${url}</a>`;
+            });
+
+            // Substitui e-mails reais por links de envio "mailto:"
+            textoFormatado = textoFormatado.replace(regexEmail, function(email) {
+                return `<a href="mailto:${email}" class="vaga-link-automatico">${email}</a>`;
+            });
+
+            return textoFormatado;
+        }
+
         function publicarVaga(e) {
             e.preventDefault();
             const novaVaga = {
@@ -498,7 +534,10 @@
             document.getElementById('detalhe-area').innerHTML = `📂 Área: <b>${vaga.area}</b>`;
             document.getElementById('detalhe-data').innerText = `📅 Postado em: ${vaga.data}`;
             document.getElementById('detalhe-local').innerHTML = `📍 <b>Localização:</b> ${vaga.local}`;
-            document.getElementById('detalhe-desc').innerText = vaga.desc;
+            
+            // Aqui aplicamos o conversor automático antes de injetar no HTML
+            document.getElementById('detalhe-desc').innerHTML = converterTextoParaLinks(vaga.desc);
+            
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
@@ -507,20 +546,18 @@
             document.getElementById('area-busca').style.display = 'block';
         }
 
-        function filtrarVagas() {
-            const cargo = document.getElementById('search-cargo').value.toLowerCase();
-            const area = document.getElementById('search-area').value.toLowerCase();
-            const local = document.getElementById('search-local').value.toLowerCase();
+        // --- NOVA BUSCA ÚNICA INTEGRADA ---
+        function filtrarVagasUnico() {
+            const busca = document.getElementById('search-vagas-input').value.toLowerCase();
 
             const filtradas = dados.vagas.filter(vaga => {
-                return vaga.titulo.toLowerCase().includes(cargo) &&
-                       vaga.area.toLowerCase().includes(area) &&
-                       vaga.local.toLowerCase().includes(local);
+                return vaga.titulo.toLowerCase().includes(busca) ||
+                       vaga.area.toLowerCase().includes(busca) ||
+                       vaga.local.toLowerCase().includes(busca);
             });
             renderVagas(filtradas);
         }
 
-        // --- SISTEMA DE CADASTRO COM REDIRECIONAMENTO ---
         function salvarCandidato(e) {
             e.preventDefault();
             const novoCandidato = {
@@ -533,8 +570,6 @@
             document.getElementById('form-candidato').reset();
             
             alert('Excelente! Seu perfil já se encontra listado no banco de talentos.');
-            
-            // Redireciona automaticamente para a aba de Vagas
             switchSection('vagas');
         }
 
@@ -555,14 +590,13 @@
             });
         }
 
-        // --- FEED DE COMENTÁRIOS / TESTEMUNHOS ---
         function salvarDepoimento(e) {
             e.preventDefault();
             const dep = {
                 nome: document.getElementById('dep-nome').value,
                 texto: document.getElementById('dep-texto').value
             };
-            dados.depoimentos.unshift(dep); // Adiciona no início para o mais recente aparecer primeiro
+            dados.depoimentos.unshift(dep); 
             localStorage.setItem('db_depoimentos', JSON.stringify(dados.depoimentos));
             document.getElementById('form-depoimento').reset();
             renderDepoimentos();
